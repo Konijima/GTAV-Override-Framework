@@ -1,119 +1,48 @@
 ﻿using System;
+using System.Reflection;
 using GTA;
 using GTA.UI;
 using GTA.Native;
-using System.Reflection;
 
 namespace GTAVOverride
 {
     public class Override : Script
     {
-        // Override Version
         public static readonly Version version = new Version(Assembly.GetExecutingAssembly().GetName().Version.ToString());
 
-        // Static Override instance
-        public static Override instance;
+        private static Override instance;
+        public static Override Instance
+        {
+            get {
+                return instance;
+            }
+        }
 
-        // GTAVOverride notifications toggler
-        public bool notifications = true;
-        public bool skipPrologue = false;
-        public bool skipLoadFade = false;
+        public bool SETTING_NOTIFICATIONS = true;
+        public bool SETTING_PROLOGUE_QUICK_LOAD = false;
+        public bool SETTING_SKIP_FADE_ON_LOAD = false;
 
-        // Private state variables
-        protected bool launching = false;
-        protected bool launched = false;
+        private bool launching = false;
+        private bool launched = false;
 
         public Override()
         {
-            Interval = 200;
-
             instance = this;
 
-            notifications = Settings.GetValue("System", "Notifications", true);
-            skipPrologue = Settings.GetValue("System", "Prologue_Quick_Load", false);
-            skipLoadFade = Settings.GetValue("System", "Skip_Fade_on_Load", false);
-
-            Settings.SetValue("System", "Notifications", notifications);
-            Settings.SetValue("System", "Prologue_Quick_Load", skipPrologue);
-            Settings.SetValue("System", "Skip_Fade_on_Load", skipLoadFade);
-
-            Settings.Save();
+            SETTING_NOTIFICATIONS = Settings.GetValue("SYSTEM", "NOTIFICATIONS", SETTING_NOTIFICATIONS);
+            SETTING_PROLOGUE_QUICK_LOAD = Settings.GetValue("SYSTEM", "PROLOGUE_QUICK_LOAD", SETTING_PROLOGUE_QUICK_LOAD);
+            SETTING_SKIP_FADE_ON_LOAD = Settings.GetValue("SYSTEM", "SKIP_FADE_ON_LOAD", SETTING_SKIP_FADE_ON_LOAD);
 
             Tick += Override_Tick;
             Aborted += Override_Aborted;
         }
 
-        public bool isLaunching
+        public void Notify(NotificationIcon icon, string sender, string title, string message, bool fadeIn = false, bool blinking = false)
         {
-            get { return launching; }
-        }
-
-        public bool isLaunched
-        {
-            get { return launched; }
-        }
-
-        private void Start()
-        {
-            if (launching) { return; }
-            if (launched) { return; }
-
-            launching = true;
-
-            Wait(1000);
-
-            if (!skipLoadFade && Screen.IsFadedIn)
+            if (SETTING_NOTIFICATIONS)
             {
-                Screen.FadeOut(400);
-                Wait(400);
+                Notification.Show(icon, sender, title, message, fadeIn, blinking);
             }
-
-            if (Game.IsCutsceneActive)
-            {
-                if (!skipPrologue) { Wait(4000); }
-                Function.Call(Hash.STOP_CUTSCENE_IMMEDIATELY);
-            }
-            else
-            {
-                Function.Call(Hash.DESTROY_MOBILE_PHONE);
-            }
-
-            KillScripts();
-
-            Game.IsMissionActive = false;
-            Game.Player.CanControlCharacter = true;
-
-            Hud.IsRadarVisible = true;
-            Hud.IsVisible = true;
-
-
-            if (!skipLoadFade && Screen.IsFadedOut)
-            {
-                Screen.FadeIn(400);
-                Wait(400);
-            }
-
-            launching = false;
-            launched = true;
-
-            if (notifications)
-            {
-                Notification.Show(NotificationIcon.MpFmContact, "GTAV Override", "Mod version " + version.ToString() + " has started!", "", true, false);
-            }
-
-            OnLaunched(new EventArgs());
-        }
-
-        private void Stop()
-        {
-            launched = false;
-
-            if (notifications)
-            {
-                Notification.Show(NotificationIcon.Blocked, "GTAV Override", "Mod has stopped!", "", true, false);
-            }
-
-            OnStopped(new EventArgs());
         }
 
         private bool CanStart()
@@ -126,6 +55,60 @@ namespace GTAVOverride
             return false;
         }
 
+        private void Start()
+        {
+            if (launching) { return; }
+            if (launched) { return; }
+
+            launching = true;
+
+            Screen.FadeOut(0);
+            Wait(1);
+
+            if (Game.IsCutsceneActive)
+            {
+                if (!SETTING_PROLOGUE_QUICK_LOAD)
+                {
+                    Wait(4000);
+                }
+                Function.Call(Hash.STOP_CUTSCENE_IMMEDIATELY);
+            }
+            else
+            {
+                Function.Call(Hash.DESTROY_MOBILE_PHONE);
+            }
+
+            Wait(100);
+
+            KillScripts();
+            
+            Wait(100);
+
+            Game.IsMissionActive = false;
+            Game.Player.CanControlCharacter = true;
+            Hud.IsRadarVisible = true;
+            Hud.IsVisible = true;
+
+            Screen.FadeIn(0);
+            Wait(1);
+
+            launching = false;
+            launched = true;
+
+            Notify(NotificationIcon.MpFmContact, "GTAVOverride", "Mod version " + version.ToString() + " has started!", "", true, false);
+
+            OnStarted(new EventArgs());
+        }
+
+        private void Stop()
+        {
+            launched = false;
+
+            Notify(NotificationIcon.Blocked, "GTAVOverride", "Mod has stopped!", "", true, false);
+
+            OnStopped(new EventArgs());
+        }
+
         private void Override_Tick(object sender, EventArgs e)
         {
             if (Game.IsLoading && launched)
@@ -133,7 +116,7 @@ namespace GTAVOverride
                 Stop();
             }
 
-            if (CanStart())
+            else if (CanStart())
             {
                 Start();
             }
@@ -144,25 +127,15 @@ namespace GTAVOverride
             Stop();
         }
 
-        // Override OnLaunched event
-        protected virtual void OnLaunched(EventArgs e)
+        protected virtual void OnStarted(EventArgs e)
         {
-            EventHandler<EventArgs> handler = Launched;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
+            Started?.Invoke(this, e);
         }
-        public event EventHandler<EventArgs> Launched;
+        public event EventHandler<EventArgs> Started;
 
-        // Override OnStopped event
         protected virtual void OnStopped(EventArgs e)
         {
-            EventHandler<EventArgs> handler = Stopped;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
+            Stopped?.Invoke(this, e);
         }
         public event EventHandler<EventArgs> Stopped;
 
