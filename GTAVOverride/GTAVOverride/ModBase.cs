@@ -56,6 +56,12 @@ namespace GTAVOverride
 
         private void ModBase_Tick(object sender, EventArgs e)
         {
+            if (_inited)
+            {
+                Update();
+                return;
+            }
+
             if (Override.Instance != null && DependenciesValidator())
             {
                 if (Override.version > OverrideMaxVersion)
@@ -66,10 +72,6 @@ namespace GTAVOverride
                 if (!_inited)
                 {
                     Init();
-                }
-                else
-                {
-                    Update();
                 }
             }
         }
