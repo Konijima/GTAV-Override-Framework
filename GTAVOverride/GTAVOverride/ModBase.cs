@@ -23,6 +23,7 @@ namespace GTAVOverride
         public bool UpdateWhilePaused = true;
 
         private bool _inited = false;
+        private bool _stopped = false;
 
         public ModBase()
         {
@@ -39,24 +40,48 @@ namespace GTAVOverride
         private void Init()
         {
             _inited = true;
-            Override.Instance.Started += Override_Started;
+            if (Override.Instance.isStarted)
+            {
+                Start();
+            }
+            else
+            {
+                Override.Instance.Started += Override_Started;
+            }
+
             Override.Instance.Stopped += Override_Stopped;
         }
 
         private void Start()
         {
-            Override.Instance.Notify(NotificationIcon.MpFmContact, ModName, "Mod version " + version.ToString() + " has started!", "", true, false);
+            _inited = false;
+            _stopped = false;
+
             OnStarted(new EventArgs());
+
+            if (Override.Instance.SETTING_NOTIFY_STARTED)
+            {
+                Override.Instance.Notify(NotificationIcon.MpFmContact, ModName, "Mod version " + version.ToString() + " has started!", "", false, false);
+            }
         }
 
         private void Stop()
         {
-            Override.Instance.Notify(NotificationIcon.Blocked, ModName, "Mod has stopped!", "", true, false);
+            _inited = false;
+            _stopped = true;
+
             OnStopped(new EventArgs());
+
+            if (Override.Instance.SETTING_NOTIFY_STOPPED)
+            {
+                Override.Instance.Notify(NotificationIcon.Blocked, ModName, "Mod has stopped!", "", false, false);
+            }
         }
 
         private void ModBase_Tick(object sender, EventArgs e)
         {
+            if (_stopped) { return; }
+
             if (_inited)
             {
                 if (Game.IsPaused && !UpdateWhilePaused)
@@ -68,11 +93,11 @@ namespace GTAVOverride
                 return;
             }
 
-            if (Override.Instance != null && DependenciesValidator())
+            else if (Override.Instance != null && DependenciesValidator())
             {
                 if (Override.version > OverrideMaxVersion)
                 {
-                    return;
+                    throw new Exception("Invalid mod dependency version!");
                 }
 
                 if (!_inited)

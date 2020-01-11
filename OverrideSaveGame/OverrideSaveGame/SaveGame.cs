@@ -10,7 +10,7 @@ namespace OverrideSaveGame
 
         public SaveGame()
         {
-            ModName = "SaveGame";
+            ModName = "OverrideSaveGame";
             OverrideMaxVersion = new Version("1.0.0.4");
 
             saveModule = new SaveModule();

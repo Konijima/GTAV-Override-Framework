@@ -18,10 +18,11 @@ namespace GTAVOverride
             }
         }
 
-        public bool SETTING_KILLERMODE = true;
-        public bool SETTING_NOTIFICATIONS = true;
-        public bool SETTING_PROLOGUE_QUICK_LOAD = false;
-        public bool SETTING_SKIP_FADE_ON_LOAD = false;
+        public bool SETTING_KILLERMODE;
+        public bool SETTING_NOTIFY_STARTED;
+        public bool SETTING_NOTIFY_STOPPED;
+        public bool SETTING_PROLOGUE_QUICK_LOAD;
+        public bool SETTING_SKIP_FADE_ON_LOAD;
 
         private bool launching = false;
         private bool launched = false;
@@ -30,21 +31,27 @@ namespace GTAVOverride
         {
             instance = this;
 
-            SETTING_KILLERMODE = Settings.GetValue("SYSTEM", "KILLERMODE", SETTING_KILLERMODE);
-            SETTING_NOTIFICATIONS = Settings.GetValue("SYSTEM", "NOTIFICATIONS", SETTING_NOTIFICATIONS);
-            SETTING_PROLOGUE_QUICK_LOAD = Settings.GetValue("SYSTEM", "PROLOGUE_QUICK_LOAD", SETTING_PROLOGUE_QUICK_LOAD);
-            SETTING_SKIP_FADE_ON_LOAD = Settings.GetValue("SYSTEM", "SKIP_FADE_ON_LOAD", SETTING_SKIP_FADE_ON_LOAD);
+            SETTING_KILLERMODE = Settings.GetValue("SYSTEM", "KILLERMODE", true);
+            SETTING_NOTIFY_STARTED = Settings.GetValue("SYSTEM", "NOTIFY_STARTED", true);
+            SETTING_NOTIFY_STOPPED = Settings.GetValue("SYSTEM", "NOTIFY_STOPPED", true);
+            SETTING_PROLOGUE_QUICK_LOAD = Settings.GetValue("SYSTEM", "PROLOGUE_QUICK_LOAD", false);
+            SETTING_SKIP_FADE_ON_LOAD = Settings.GetValue("SYSTEM", "SKIP_FADE_ON_LOAD", false);
 
             Tick += Override_Tick;
             Aborted += Override_Aborted;
         }
 
+        public bool isStarted
+        {
+            get
+            {
+                return launched;
+            }
+        }
+
         public void Notify(NotificationIcon icon, string sender, string title, string message, bool fadeIn = false, bool blinking = false)
         {
-            if (SETTING_NOTIFICATIONS)
-            {
-                Notification.Show(icon, sender, title, message, fadeIn, blinking);
-            }
+            Notification.Show(icon, sender, title, message, fadeIn, blinking);
         }
 
         private bool CanStart()
@@ -76,7 +83,6 @@ namespace GTAVOverride
 
             if (SETTING_KILLERMODE)
             {
-
                 Screen.FadeOut(0);
                 Wait(1);
 
@@ -84,7 +90,7 @@ namespace GTAVOverride
                 {
                     if (!SETTING_PROLOGUE_QUICK_LOAD)
                     {
-                        Wait(4000);
+                        Wait(5000);
                     }
                     Function.Call(Hash.STOP_CUTSCENE_IMMEDIATELY);
                 }
@@ -106,13 +112,15 @@ namespace GTAVOverride
 
                 Screen.FadeIn(0);
                 Wait(1);
-
             }
 
             launching = false;
             launched = true;
 
-            Notify(NotificationIcon.MpFmContact, "GTAVOverride", "Mod version " + version.ToString() + " has started!", "", true, false);
+            if (SETTING_NOTIFY_STARTED)
+            {
+                Notify(NotificationIcon.MpFmContact, "GTAVOverride", "Mod version " + version.ToString() + " has started!", "", false, false);
+            }
 
             OnStarted(new EventArgs());
         }
@@ -121,21 +129,23 @@ namespace GTAVOverride
         {
             launched = false;
 
-            Notify(NotificationIcon.Blocked, "GTAVOverride", "Mod has stopped!", "", true, false);
-
             OnStopped(new EventArgs());
+
+            if (SETTING_NOTIFY_STOPPED)
+            {
+                Notify(NotificationIcon.Blocked, "GTAVOverride", "Mod has stopped!", "", false, false);
+            }
         }
 
         private void Override_Tick(object sender, EventArgs e)
         {
-            if (Game.IsLoading && launched)
-            {
-                Stop();
-            }
-
-            else if (CanStart())
+            if (CanStart())
             {
                 Start();
+            }
+            else if (launched && (Game.IsLoading || Game.IsMissionActive || Game.IsCutsceneActive))
+            {
+                Stop();
             }
         }
 

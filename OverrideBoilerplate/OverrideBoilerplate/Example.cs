@@ -23,12 +23,13 @@ namespace OverrideBoilerplate
 
         protected override void Update()
         {
-            Screen.ShowHelpTextThisFrame("Remove " + ModName + ".dll and reload scripts."); // main loop
+            Screen.ShowHelpTextThisFrame("Remove " + ModName + ".dll and reload scripts (F5)."); // main loop
         }
 
         private void Example_Started(object sender, EventArgs e)
         {
             // what happen when we start
+
         }
 
         private void Example_Stopped(object sender, EventArgs e)
