@@ -1,6 +1,7 @@
 ﻿using System;
 using GTA.UI;
 using GTAVOverride;
+using OverridePersistence;
 
 namespace OverrideBoilerplate
 {
@@ -9,6 +10,7 @@ namespace OverrideBoilerplate
         public Example()
         {
             ModName = "Example Mod";
+            OverrideMaxVersion = new Version("1.0.0.4");
 
             Started += Example_Started;
             Stopped += Example_Stopped;
@@ -16,12 +18,12 @@ namespace OverrideBoilerplate
 
         protected override bool DependenciesValidator()
         {
-            return true;
+            return (Persistence.Instance != null && Persistence.version <= new Version("1.0.0.4"));
         }
 
         protected override void Update()
         {
-            // Screen.ShowHelpTextThisFrame(ModName);
+            Screen.ShowHelpTextThisFrame(ModName);
         }
 
         private void Example_Started(object sender, EventArgs e)

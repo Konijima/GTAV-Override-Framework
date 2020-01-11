@@ -17,7 +17,7 @@ namespace OverridePersistence
 
         protected override bool DependenciesValidator()
         {
-            return (SaveGame.Instance != null && SaveGame.version >= new Version("1.0.0.4"));
+            return (SaveGame.Instance != null && SaveGame.version <= new Version("1.0.0.4"));
         }
 
         protected override void Update()
