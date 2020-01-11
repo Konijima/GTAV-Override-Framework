@@ -8,7 +8,7 @@ namespace OverridePersistence
     {
         public Persistence()
         {
-            ModName = "Override Persistence";
+            ModName = "OverridePersistence";
             OverrideMaxVersion = new Version("1.0.0.4");
 
             Started += Persistence_Started;

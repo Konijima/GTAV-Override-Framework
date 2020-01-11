@@ -19,7 +19,8 @@ namespace GTAVOverride
         public static Version version { get; } = new Version(Assembly.GetExecutingAssembly().GetName().Version.ToString());
         public static Version OverrideMaxVersion = version;
 
-        public string ModName;
+        public string ModName = "No name";
+        public bool UpdateWhilePaused = true;
 
         private bool _inited = false;
 
@@ -58,6 +59,11 @@ namespace GTAVOverride
         {
             if (_inited)
             {
+                if (Game.IsPaused && !UpdateWhilePaused)
+                {
+                    return;
+                }
+
                 Update();
                 return;
             }

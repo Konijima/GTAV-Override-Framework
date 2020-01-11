@@ -18,6 +18,7 @@ namespace GTAVOverride
             }
         }
 
+        public bool SETTING_KILLERMODE = true;
         public bool SETTING_NOTIFICATIONS = true;
         public bool SETTING_PROLOGUE_QUICK_LOAD = false;
         public bool SETTING_SKIP_FADE_ON_LOAD = false;
@@ -29,6 +30,7 @@ namespace GTAVOverride
         {
             instance = this;
 
+            SETTING_KILLERMODE = Settings.GetValue("SYSTEM", "KILLERMODE", SETTING_KILLERMODE);
             SETTING_NOTIFICATIONS = Settings.GetValue("SYSTEM", "NOTIFICATIONS", SETTING_NOTIFICATIONS);
             SETTING_PROLOGUE_QUICK_LOAD = Settings.GetValue("SYSTEM", "PROLOGUE_QUICK_LOAD", SETTING_PROLOGUE_QUICK_LOAD);
             SETTING_SKIP_FADE_ON_LOAD = Settings.GetValue("SYSTEM", "SKIP_FADE_ON_LOAD", SETTING_SKIP_FADE_ON_LOAD);
@@ -47,9 +49,19 @@ namespace GTAVOverride
 
         private bool CanStart()
         {
-            if ((Game.Player != null && Game.Player.Character != null) && (!Game.IsLoading && !launched && !launching))
+            if (SETTING_KILLERMODE)
             {
-                return true;
+                if ((Game.Player != null && Game.Player.Character != null) && (!Game.IsLoading && !launched && !launching))
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                if ((Game.Player != null && Game.Player.Character != null) && (!Game.IsLoading && !launched && !launching) && (!Game.IsMissionActive && !Game.IsCutsceneActive))
+                {
+                    return true;
+                }
             }
 
             return false;
@@ -62,35 +74,40 @@ namespace GTAVOverride
 
             launching = true;
 
-            Screen.FadeOut(0);
-            Wait(1);
-
-            if (Game.IsCutsceneActive)
+            if (SETTING_KILLERMODE)
             {
-                if (!SETTING_PROLOGUE_QUICK_LOAD)
+
+                Screen.FadeOut(0);
+                Wait(1);
+
+                if (Game.IsCutsceneActive)
                 {
-                    Wait(4000);
+                    if (!SETTING_PROLOGUE_QUICK_LOAD)
+                    {
+                        Wait(4000);
+                    }
+                    Function.Call(Hash.STOP_CUTSCENE_IMMEDIATELY);
                 }
-                Function.Call(Hash.STOP_CUTSCENE_IMMEDIATELY);
+                else
+                {
+                    Function.Call(Hash.DESTROY_MOBILE_PHONE);
+                }
+
+                Wait(100);
+
+                KillScripts();
+
+                Wait(100);
+
+                Game.IsMissionActive = false;
+                Game.Player.CanControlCharacter = true;
+                Hud.IsRadarVisible = true;
+                Hud.IsVisible = true;
+
+                Screen.FadeIn(0);
+                Wait(1);
+
             }
-            else
-            {
-                Function.Call(Hash.DESTROY_MOBILE_PHONE);
-            }
-
-            Wait(100);
-
-            KillScripts();
-            
-            Wait(100);
-
-            Game.IsMissionActive = false;
-            Game.Player.CanControlCharacter = true;
-            Hud.IsRadarVisible = true;
-            Hud.IsVisible = true;
-
-            Screen.FadeIn(0);
-            Wait(1);
 
             launching = false;
             launched = true;
