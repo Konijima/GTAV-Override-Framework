@@ -5,24 +5,24 @@
 
 ***
 
-**Wiki:**
+**Wiki:**  
 https://github.com/Konijima/GTAV-Override-Framework/wiki/
 
-**Mod Template (Boilerplate):**
+**Mod Template (Boilerplate):**  
 https://github.com/Konijima/GTAV-Override-Framework/tree/master/OverrideBoilerplate
 
 ***
 
-**GTA 5 Mods Forum:**
+**GTA 5 Mods Forum:**  
 https://forums.gta5-mods.com/topic/27076/wip-gtav-override
 
-**GTA 5 Mods Page:**
+**GTA 5 Mods Page:**  
 https://www.gta5-mods.com/scripts/net-gtav-override
 
-**Join on Discord:**
+**Join on Discord:**  
 https://discord.gg/k77Vsmt
 
-**My GTA 5 Mods profile:**
+**My GTA 5 Mods profile:**  
 https://www.gta5-mods.com/users/Konijima
 
 ***
