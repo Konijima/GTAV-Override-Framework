@@ -17,7 +17,7 @@ namespace GTAVOverride
         }
 
         public static Version version { get; } = new Version(Assembly.GetExecutingAssembly().GetName().Version.ToString());
-        public static Version OverrideMaxVersion;
+        public static Version OverrideMaxVersion = version;
 
         public string ModName;
 
