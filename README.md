@@ -5,6 +5,14 @@
 
 ***
 
+**Wiki:**
+https://github.com/Konijima/GTAV-Override-Framework/wiki/
+
+**Mod Template (Boilerplate):**
+https://github.com/Konijima/GTAV-Override-Framework/tree/master/OverrideBoilerplate
+
+***
+
 **GTA 5 Mods Forum:**
 https://forums.gta5-mods.com/topic/27076/wip-gtav-override
 
