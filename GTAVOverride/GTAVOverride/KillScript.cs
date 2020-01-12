@@ -7,7 +7,7 @@ namespace GTAVOverride
 {
     public class KillScript : Script
     {
-        private int delay = 1000;
+        private int delay = 10;
 
         public KillScript()
         {
@@ -43,6 +43,8 @@ namespace GTAVOverride
                     {
                         if (Function.Call<bool>(Hash.HAS_SCRIPT_WITH_NAME_HASH_LOADED, scriptHash))
                         {
+                            Function.Call(Hash.SET_SCRIPT_AS_NO_LONGER_NEEDED, script);
+                            Function.Call(Hash.SET_SCRIPT_WITH_NAME_HASH_AS_NO_LONGER_NEEDED, scriptHash);
                             Function.Call(Hash.TERMINATE_ALL_SCRIPTS_WITH_THIS_NAME, script);
                         }
                     }
