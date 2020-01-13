@@ -18,7 +18,7 @@ namespace GTAVOverride.Scripts
 
         public PlayerScript()
         {
-            Interval = 333;
+            Interval = 128;
 
             dead = false;
             deathTriggered = false;
@@ -67,7 +67,7 @@ namespace GTAVOverride.Scripts
         {
             deathTriggered = true;
             Audio.PlaySoundFrontend("Bed", "WastedSounds");
-            World.RenderingCamera.Shake(CameraShake.DeathFail, 10f);
+            World.RenderingCamera.Shake(CameraShake.DeathFail, 1f);
             Screen.StartEffect(ScreenEffect.DeathFailMpDark, 0, false);
         }
 

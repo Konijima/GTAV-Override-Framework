@@ -5,7 +5,8 @@ using GTA.Native;
 
 namespace GTAVOverride.Scripts
 {
-    class EconomyScript : Script
+    [ScriptAttributes(NoDefaultInstance = true)]
+    public class EconomyScript : Script
     {
         public static readonly int maxAmount = 999999999;
         public static readonly float maxInterest = 0.25f;
@@ -26,7 +27,7 @@ namespace GTAVOverride.Scripts
 
         public EconomyScript()
         {
-            _hasBank = true;
+            _hasBank = false;
             _cash = 0;
             _bank = 0;
             _totalGain = 0;

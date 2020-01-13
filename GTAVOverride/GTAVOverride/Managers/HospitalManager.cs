@@ -96,7 +96,7 @@ namespace GTAVOverride.Managers
 
         public static void EnableAllHospitals()
         {
-            for (int H = 0; H < 4; H++)
+            for (int H = 0; H < 8; H++)
             {
                 EnableHospital(H);
             }
@@ -104,7 +104,7 @@ namespace GTAVOverride.Managers
 
         public static void DisableAllHospitals()
         {
-            for (int H = 0; H < 4; H++)
+            for (int H = 0; H < 8; H++)
             {
                 DisableHospital(H);
             }

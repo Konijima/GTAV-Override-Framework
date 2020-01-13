@@ -15,7 +15,7 @@ namespace GTAVOverride.Scripts
     public class ClockScript : Script
     {
 
-        private ClockMode _mode = ClockMode.Sync;
+        private ClockMode _mode;
         private float _timerate = 1f;
         private int _timer = 0;
 
@@ -23,9 +23,7 @@ namespace GTAVOverride.Scripts
 
         public ClockScript()
         {
-            date = DateTime.Now;
-            time = date.TimeOfDay;
-
+            _mode = Settings.GetValue("CLOCK", "MODE", ClockMode.Vanilla);
             Tick += ClockScripts_Tick;
         }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using GTA;
+using GTA.UI;
 using GTA.Math;
 using GTA.Native;
 
@@ -12,10 +13,20 @@ namespace GTAVOverride.Managers
         public float heading;
         public Blip blip;
 
+        private int holding;
+        private bool broken;
+        private int nextRespawn;
+
         public ATM(Vector3 position, float heading)
         {
             this.position = position;
             this.heading = heading;
+
+            Random random = new Random();
+
+            holding = random.Next(200, 2000);
+            broken = false;
+            nextRespawn = 0;
 
             blip = World.CreateBlip(position);
             blip.Sprite = BlipSprite.CashPickup;
@@ -26,11 +37,141 @@ namespace GTAVOverride.Managers
             Function.Call(Hash.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME, "ATM");
             Function.Call(Hash.END_TEXT_COMMAND_SET_BLIP_NAME, blip.Handle);
         }
+
+        public void SpawnMoney()
+        {
+            Random random = new Random();
+
+            int amount = 1;
+            if (holding > 500) amount = 2;
+            else if (holding > 1000) amount = 3;
+            else if (holding > 1500) amount = 4;
+            else if (holding > 2000) amount = 5;
+            else if (holding > 2500) amount = 8;
+
+            int value = holding / amount;
+
+            Function.Call(Hash.CREATE_MONEY_PICKUPS, position.X, position.Y, position.Z, value, amount, 0);
+        }
+
+        public void Break()
+        {
+            if (!broken)
+            {
+                broken = true;
+                nextRespawn = Game.GameTime + 10000;
+                SpawnMoney();
+            }
+        }
     }
 
-    public static class AtmManager
+    public class AtmManager : Script
     {
         public static List<ATM> Atms = new List<ATM>();
+
+        private ATM _nearbyATM;
+        private bool _usingAtm = false;
+        private bool _toggleHide = false;
+        private int _updateNearestTimer = 0;
+
+        public AtmManager()
+        {
+            Tick += AtmManager_Tick;
+            Aborted += AtmManager_Aborted;
+        }
+
+        private void AtmManager_Aborted(object sender, EventArgs e)
+        {
+            if (_usingAtm)
+            {
+                Game.Player.Character.Task.ClearAllImmediately();
+            }
+        }
+
+        private void UpdateNearbyATM()
+        {
+            if (_nearbyATM == null) return;
+
+            if (Game.Player.Character.Position.DistanceTo(_nearbyATM.position) < 1f)
+            {
+                if (Game.IsControlJustPressed(Control.Talk))
+                {
+                    if (_usingAtm)
+                    {
+                        Game.Player.Character.Task.ClearAll();
+                        Game.Player.Character.Task.ClearSecondary();
+                        Wait(7000);
+                        _usingAtm = false;
+                    }
+                    else
+                    {
+                        Game.Player.Character.Weapons.Select(WeaponHash.Unarmed);
+                        Wait(200);
+                        Game.Player.Character.Task.GoStraightTo(_nearbyATM.position, -1, _nearbyATM.heading, 600);
+                        Wait(600);
+                        Vector3 newPos = Game.Player.Character.Position - Game.Player.Character.ForwardVector * 0.15f;
+                        Function.Call(Hash.TASK_START_SCENARIO_AT_POSITION, Game.Player.Character, "PROP_HUMAN_ATM", newPos.X, newPos.Y, newPos.Z, _nearbyATM.heading, 600000, false, false);
+                        Wait(7000);
+                        _usingAtm = true;
+                    }
+                }
+                else
+                {
+                    if (_usingAtm)
+                    {
+                        Screen.ShowHelpTextThisFrame("Press ~INPUT_TALK~ to stop using the ATM.");
+                    }
+                    else
+                    {
+                        Screen.ShowHelpTextThisFrame("Press ~INPUT_TALK~ to use the ATM.");
+                    }
+                }
+            }
+            else
+            {
+                _nearbyATM = null;
+            }
+        }
+
+        private void AtmManager_Tick(object sender, EventArgs e)
+        {
+            if (!_toggleHide && Game.Player.WantedLevel > 0)
+            {
+                _toggleHide = true;
+                HideATMBlips();
+                return;
+            }
+            else if(_toggleHide && Game.Player.WantedLevel == 0)
+            {
+                _toggleHide = false;
+                ShowATMBlips();
+            }
+
+            if (_toggleHide ||
+                Game.IsLoading ||
+                !Game.Player.Character.IsAlive ||
+                !Game.Player.Character.IsOnFoot) return;
+
+            if (_nearbyATM != null)
+            {
+                UpdateNearbyATM();
+            }
+            else
+            {
+                if (Game.GameTime > _updateNearestTimer + 1000)
+                {
+                    _updateNearestTimer = Game.GameTime;
+                    foreach (ATM atm in Atms)
+                    {
+                        if (Game.Player.Character.Position.DistanceTo(atm.position) < 1f)
+                        {
+                            _nearbyATM = atm;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
 
         public static void CreateATMs()
         {
@@ -135,6 +276,11 @@ namespace GTAVOverride.Managers
             {
                 atm.blip.Alpha = 0;
             }
+        }
+
+        public static void BreakATM(ATM atm)
+        {
+            
         }
     }
 }

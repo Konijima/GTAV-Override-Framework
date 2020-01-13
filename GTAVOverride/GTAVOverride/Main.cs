@@ -11,6 +11,8 @@ namespace GTAVOverride
 {
     public class Main : Script
     {
+        public bool debugmode = false;
+
         private bool _init;
 
         private List<Script> scripts = new List<Script>();
@@ -18,6 +20,8 @@ namespace GTAVOverride
         public Main()
         {
             Screen.ShowHelpTextThisFrame("");
+
+            debugmode = Settings.GetValue<bool>("SETTINGS", "DEBUGMODE", false);
 
             if (!Settings.GetValue<bool>("KILLSCRIPT", "KILLONLY", false))
             {
@@ -37,6 +41,10 @@ namespace GTAVOverride
                 {
                     scripts.Add(Script.InstantiateScript<EconomyScript>());
                 }
+                if (Settings.GetValue<bool>("SCRIPTS", "ROBPEDSCRIPT", true))
+                {
+                    scripts.Add(Script.InstantiateScript<RobPedScript>());
+                }
                 if (Settings.GetValue<bool>("SCRIPTS", "WAYPOINTSCRIPT", true))
                 {
                     scripts.Add(Script.InstantiateScript<WaypointScript>());
@@ -46,7 +54,7 @@ namespace GTAVOverride
                 Aborted += Main_Aborted;
             }
         }
-        
+
         private void Main_Tick(object sender, EventArgs e)
         {
             if (!Game.IsPaused && !Game.IsLoading)
@@ -56,7 +64,7 @@ namespace GTAVOverride
                     Init();
                 }
 
-                if (Game.Player.Character.IsShooting)
+                if (debugmode && Game.Player.Character.IsShooting)
                 {
                     Entity entity = Game.Player.TargetedEntity;
                     if (entity != null)
@@ -91,17 +99,22 @@ namespace GTAVOverride
         {
             _init = true;
 
-            Game.MaxWantedLevel = 0;
-            Game.Player.IsInvincible = true;
-            Game.Player.Character.Weapons.Give(WeaponHash.Bat, 1, true, false);
-            Game.Player.Character.Weapons.Give(WeaponHash.Pistol, 500, true, true);
+            if (debugmode) {
+                Game.MaxWantedLevel = 5;
+                Game.Player.WantedLevel = 0;
+                Game.Player.IsInvincible = true;
+                Game.Player.Character.IsInvincible = true;
+                Game.Player.Character.Weapons.Give(WeaponHash.Bat, 1, true, false);
+                Game.Player.Character.Weapons.Give(WeaponHash.Grenade, 500, true, true);
+                Game.Player.Character.Weapons.Give(WeaponHash.Pistol, 500, true, true);
+            }
 
             foreach (Script script in scripts)
             {
                 // ClockScript Init
                 if (script.GetType() == typeof(ClockScript))
                 {
-                    ((ClockScript)script).SetMode(ClockMode.Virtual);
+                    ((ClockScript)script).SetMode(Settings.GetValue<ClockMode>("CLOCK", "MODE", ClockMode.Vanilla));
                 }
             }
 

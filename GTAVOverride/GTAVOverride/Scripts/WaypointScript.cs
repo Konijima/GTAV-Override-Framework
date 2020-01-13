@@ -8,6 +8,7 @@ using GTA.Native;
 
 namespace GTAVOverride
 {
+    [ScriptAttributes(NoDefaultInstance = true)]
     public class WaypointScript : Script
     {
         public WaypointScript()
