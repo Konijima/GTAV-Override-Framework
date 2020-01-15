@@ -9,15 +9,17 @@ namespace GTAVOverride.Scripts
 {
 
     [ScriptAttributes(NoDefaultInstance = true)]
-    public class PlayerScript : Script
+    public class PlayerDeathArrestScript : Script
     {
         private bool dead;
         private bool deathTriggered;
         private bool arrested;
         private bool arrestTriggered;
 
-        public PlayerScript()
+        public PlayerDeathArrestScript()
         {
+            Pause();
+
             Interval = 128;
 
             dead = false;

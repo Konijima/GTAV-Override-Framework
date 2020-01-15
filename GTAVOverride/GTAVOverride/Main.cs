@@ -1,185 +1,169 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using GTA;
-using GTA.UI;
-using GTA.Native;
 using GTAVOverride.Managers;
 using GTAVOverride.Scripts;
+using GTAVOverride.Configs;
 
 namespace GTAVOverride
 {
     public class Main : Script
     {
-        public bool debugmode = false;
+        public static ConfigData configData;
+        public static ConfigSettings configSettings;
+        public static ConfigScripts configScripts;
+        public static ConfigBlips configBlips;
 
-        private bool _init;
-
-        private List<Script> scripts = new List<Script>();
+        private bool _initialized;
+        private KillScript _killScript;
+        private List<Script> _scripts;
 
         public Main()
         {
-            Screen.ShowHelpTextThisFrame("");
+            configData = new ConfigData(Settings);
+            configSettings = new ConfigSettings(Settings);
+            configScripts = new ConfigScripts(Settings);
+            configBlips = new ConfigBlips(Settings);
 
-            debugmode = Settings.GetValue<bool>("SETTINGS", "DEBUGMODE", false);
+            _initialized = false;
+            _scripts = new List<Script>();
 
-            if (!Settings.GetValue<bool>("KILLSCRIPT", "KILLONLY", false))
-            {
-                if (Settings.GetValue<bool>("SCRIPTS", "PLAYERSCRIPT", true))
-                {
-                    scripts.Add(Script.InstantiateScript<PlayerScript>());
-                }
-                if (Settings.GetValue<bool>("SCRIPTS", "CLOCKSCRIPT", true))
-                {
-                    scripts.Add(Script.InstantiateScript<ClockScript>());
-                }
-                if (Settings.GetValue<bool>("SCRIPTS", "TIMESCALESCRIPT", true))
-                {
-                    scripts.Add(Script.InstantiateScript<TimescaleScript>());
-                }
-                if (Settings.GetValue<bool>("SCRIPTS", "ECONOMYSCRIPT", true))
-                {
-                    scripts.Add(Script.InstantiateScript<EconomyScript>());
-                }
-                if (Settings.GetValue<bool>("SCRIPTS", "ROBPEDSCRIPT", true))
-                {
-                    scripts.Add(Script.InstantiateScript<RobPedScript>());
-                }
-                if (Settings.GetValue<bool>("SCRIPTS", "WAYPOINTSCRIPT", true))
-                {
-                    scripts.Add(Script.InstantiateScript<WaypointScript>());
-                }
+            if (configScripts.Atm_Script) _scripts.Add(InstantiateScript<AtmScript>());
+            if (configScripts.ClockTime_Script) _scripts.Add(InstantiateScript<ClockTimeScript>());
+            if (configScripts.Economy_Script) _scripts.Add(InstantiateScript<EconomyScript>());
+            if (configScripts.Player_Death_Arrest_Script) _scripts.Add(InstantiateScript<PlayerDeathArrestScript>());
+            if (configScripts.Player_Persistence_Script) _scripts.Add(InstantiateScript<PlayerPersistenceScript>());
+            if (configScripts.Rob_People_Script) _scripts.Add(InstantiateScript<RobPeopleScript>());
+            if (configScripts.Store_Script) _scripts.Add(InstantiateScript<StoreScript>());
+            if (configScripts.TimeScale_Script) _scripts.Add(InstantiateScript<TimeScaleScript>());
+            if (configScripts.Waypoint_Tools_Script) _scripts.Add(InstantiateScript<WaypointToolsScript>());
 
-                Tick += Main_Tick;
-                Aborted += Main_Aborted;
-            }
+            Tick += Main_Tick;
+            Aborted += Main_Aborted;
         }
 
         private void Main_Tick(object sender, EventArgs e)
         {
-            if (!Game.IsPaused && !Game.IsLoading)
+            if (!Game.IsLoading && _killScript == null)
             {
-                if (!_init)
+                GTA.UI.Screen.FadeOut(1);
+                _killScript = InstantiateScript<KillScript>();
+
+                if (configSettings.Kill_GTAV_Scripts_Only)
                 {
-                    Init();
+                    Helpers.DebugSubtitle("Killing GTAV Scripts Only!", 1000);
+                    Wait(2000);
+                    Abort();
+                    return;
                 }
-
-                if (debugmode && Game.Player.Character.IsShooting)
-                {
-                    Entity entity = Game.Player.TargetedEntity;
-                    if (entity != null)
-                    {
-                        entity.IsPositionFrozen = false;
-                        Settings.SetValue("ENTITYHASH | X | Y | Z | HEADING", entity.Model.Hash.ToString(), entity.Position.X + "f, " + entity.Position.Y + "f, " + entity.Position.Z + "f, " + entity.Heading + "f");
-                        Settings.Save();
-                    }
-                }
-
-                foreach(Script script in scripts)
-                {
-                    if (script.IsPaused)
-                    {
-                        script.Resume();
-                    }
-                }
+                else Helpers.DebugSubtitle("Killing GTAV Scripts...", 1000);
             }
-            else
+
+            if (Game.IsLoading)
             {
-                foreach (Script script in scripts)
-                {
-                    if (script.IsExecuting)
-                    {
-                        script.Pause();
-                    }
-                }
-            }
-        }
-
-        private void Init()
-        {
-            _init = true;
-
-            if (debugmode) {
-                Game.MaxWantedLevel = 5;
-                Game.Player.WantedLevel = 0;
-                Game.Player.IsInvincible = true;
-                Game.Player.Character.IsInvincible = true;
-                Game.Player.Character.Weapons.Give(WeaponHash.Bat, 1, true, false);
-                Game.Player.Character.Weapons.Give(WeaponHash.Grenade, 500, true, true);
-                Game.Player.Character.Weapons.Give(WeaponHash.Pistol, 500, true, true);
+                if (_initialized) Abort();
+                return;
             }
 
-            foreach (Script script in scripts)
+            if (_killScript != null && _initialized == false)
             {
-                // ClockScript Init
-                if (script.GetType() == typeof(ClockScript))
-                {
-                    ((ClockScript)script).SetMode(Settings.GetValue<ClockMode>("CLOCK", "MODE", ClockMode.Vanilla));
-                }
+                InitializeManagers();
+                Wait(1000);
+                StartScripts();
+                Wait(1000);
+                DebugInit();
+                _initialized = true;
             }
-
-            // DOORS
-            DoorManager.CreateDoors();
-            if (Settings.GetValue<bool>("DOORS", "ALL_UNLOCKED", true))
-            {
-                DoorManager.UnlockAll();
-            }
-            if (Settings.GetValue<bool>("DOORS", "ALL_LOCKED", true))
-            {
-                DoorManager.LockAll();
-            }
-
-            AmmunationManager.CreateAmmunations();
-            if (!Settings.GetValue<bool>("BLIPS", "AMMUNATIONS", true))
-            {
-                AmmunationManager.HideAmmunationBlips();
-            }
-
-            AtmManager.CreateATMs();
-            if (!Settings.GetValue<bool>("BLIPS", "ATMS", true))
-            {
-                AtmManager.HideATMBlips();
-            }
-
-            StoreManager.CreateStores();
-            if (!Settings.GetValue<bool>("BLIPS", "STORES", true))
-            {
-                StoreManager.HideStoreBlips();
-            }
-
-            HospitalManager.CreateDefaultHospitalBlips();
-            if (!Settings.GetValue<bool>("BLIPS", "HOSPITALS", true))
-            {
-                HospitalManager.HideHospitalBlips();
-            }
-
-            PoliceStationManager.CreateDefaultPoliceStationBlips();
-            if (!Settings.GetValue<bool>("BLIPS", "POLICESTATIONS", true))
-            {
-                PoliceStationManager.HidePoliceStationBlips();
-            }
-
-            HospitalManager.EnableAllHospitals();
-            if (!Settings.GetValue<bool>("SETTINGS", "HOSPITAL_SPAWNS", true))
-            {
-                HospitalManager.DisableAllHospitals();
-            }
-
-            PoliceStationManager.EnableAllPoliceStations();
-            if (!Settings.GetValue<bool>("SETTINGS", "POLICESTATION_SPAWNS", true))
-            {
-                PoliceStationManager.DisableAllPoliceStations();
-            }
-
-            // firestation: 207.2706f, -1649.573f, 29.8032f
-            // CreateFleeca(new Vector3(150.12f, -1040.139f, 29.37409f), 149.2541f);
         }
 
         private void Main_Aborted(object sender, EventArgs e)
         {
-            // delete all blips
+            StopScripts();
+            ClearAllBlips();
+        }
+
+        private void DebugInit()
+        {
+            Game.MaxWantedLevel = 5;
+            Game.Player.WantedLevel = 0;
+            Game.Player.IsInvincible = false;
+            Game.Player.Character.IsInvincible = Game.Player.IsInvincible;
+            Game.Player.Character.Weapons.Give(WeaponHash.Bat, 1, true, false);
+            Game.Player.Character.Weapons.Give(WeaponHash.Grenade, 500, true, true);
+            Game.Player.Character.Weapons.Give(WeaponHash.Pistol, 500, true, true);
+            Game.Player.Character.Weapons.Give(WeaponHash.AssaultRifle, 500, true, true);
+            Game.Player.Character.Weapons.Give(WeaponHash.DoubleBarrelShotgun, 500, true, true);
+        }
+
+        private void StartScripts()
+        {
+            int startedCount = 0;
+            foreach (Script script in _scripts)
+            {
+                if (script.IsRunning)
+                {
+                    script.Resume();
+                    startedCount++;
+                }
+            }
+            Helpers.DebugSubtitle("Started " + startedCount + " script(s).", 1000);
+        }
+
+        private void StopScripts()
+        {
+            int stoppedCount = 0;
+            foreach (Script script in _scripts)
+            {
+                if (script.IsRunning)
+                {
+                    script.Pause();
+                    stoppedCount++;
+                }
+            }
+            Helpers.DebugSubtitle("Stopped " + stoppedCount + " script(s).", 1000);
+        }
+
+        private void InitializeManagers()
+        {
+            foreach (Script script in _scripts)
+            {
+                // ClockScript Init
+                if (script.GetType() == typeof(ClockTimeScript))
+                {
+                    ((ClockTimeScript)script).SetMode(configSettings.Clock_Mode);
+                }
+            }
+
+            AmmunationManager.CreateAmmunations();
+            if (!configBlips.Show_Ammunations) AmmunationManager.HideAmmunationBlips();
+
+            AtmManager.CreateATMs();
+            if (!configBlips.Show_Atm) AtmManager.HideATMBlips();
+
+            DoorManager.CreateDoors();
+            if (configSettings.Unlock_All_Doors) DoorManager.UnlockAll();
+
+            HospitalManager.CreateDefaultHospitalBlips();
+            if (!configBlips.Show_Hospitals) HospitalManager.HideHospitalBlips();
+            if (configSettings.Hospital_Spawn_OnDeath) HospitalManager.EnableAllHospitals();
+            else HospitalManager.DisableAllHospitals();
+
+            PoliceStationManager.CreateDefaultPoliceStationBlips();
+            if (!configBlips.Show_PoliceStations) PoliceStationManager.HidePoliceStationBlips();
+            if (configSettings.PoliceStation_Spawn_OnArrest) PoliceStationManager.EnableAllPoliceStations();
+            else PoliceStationManager.DisableAllPoliceStations();
+
+            StoreManager.CreateStores();
+            if (!configBlips.Show_Stores) StoreManager.HideStoreBlips();
+        }
+
+        private void ClearAllBlips()
+        {
+            PlayerManager.Save();
+            Wait(1000);
+
             Blip[] blips = World.GetAllBlips();
-            foreach(Blip blip in blips)
+            foreach (Blip blip in blips)
             {
                 blip.Delete();
             }

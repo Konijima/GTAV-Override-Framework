@@ -26,6 +26,16 @@ namespace GTAVOverride.Managers
             Function.Call(Hash.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME, "Store");
             Function.Call(Hash.END_TEXT_COMMAND_SET_BLIP_NAME, blip.Handle);
         }
+
+        public void Show()
+        {
+            blip.Alpha = 255;
+        }
+
+        public void Hide(int alpha = 0)
+        {
+            blip.Alpha = alpha;
+        }
     }
 
     public static class StoreManager
@@ -63,15 +73,15 @@ namespace GTAVOverride.Managers
         {
             foreach (Store store in Stores)
             {
-                store.blip.Alpha = 255;
+                store.Show();
             }
         }
 
-        public static void HideStoreBlips()
+        public static void HideStoreBlips(int alpha = 0)
         {
             foreach (Store store in Stores)
             {
-                store.blip.Alpha = 0;
+                store.Hide(alpha);
             }
         }
     }

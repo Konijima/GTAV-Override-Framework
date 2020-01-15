@@ -5,7 +5,7 @@ using GTA.Native;
 namespace GTAVOverride.Scripts
 {
     [ScriptAttributes(NoDefaultInstance = true)]
-    class TimescaleScript : Script
+    class TimeScaleScript : Script
     {
         public static readonly float maximumTimescale = 1f;
         public static readonly float minimumTimescale = 0.01f;
@@ -13,8 +13,10 @@ namespace GTAVOverride.Scripts
         private float _target;
         private float _forced;
 
-        public TimescaleScript()
+        public TimeScaleScript()
         {
+            Pause();
+
             _target = 1f;
             current = 1f;
 

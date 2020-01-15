@@ -5,6 +5,7 @@ using GTA.Native;
 
 namespace GTAVOverride
 {
+    [ScriptAttributes(NoDefaultInstance = true)]
     public class KillScript : Script
     {
         private int delay = 10;
@@ -54,7 +55,6 @@ namespace GTAVOverride
                 Game.Player.CanControlCharacter = true;
                 Hud.IsRadarVisible = true;
                 Hud.IsVisible = true;
-                Screen.FadeIn(1);
 
                 Abort();
             }

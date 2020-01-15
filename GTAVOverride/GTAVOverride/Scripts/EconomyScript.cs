@@ -27,6 +27,8 @@ namespace GTAVOverride.Scripts
 
         public EconomyScript()
         {
+            Pause();
+
             _hasBank = false;
             _cash = 0;
             _bank = 0;

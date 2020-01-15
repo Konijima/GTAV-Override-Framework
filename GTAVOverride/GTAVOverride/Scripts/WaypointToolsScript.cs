@@ -9,10 +9,12 @@ using GTA.Native;
 namespace GTAVOverride
 {
     [ScriptAttributes(NoDefaultInstance = true)]
-    public class WaypointScript : Script
+    public class WaypointToolsScript : Script
     {
-        public WaypointScript()
+        public WaypointToolsScript()
         {
+            Pause();
+
             Interval = 1000;
 
             Tick += WaypointTool_Tick;

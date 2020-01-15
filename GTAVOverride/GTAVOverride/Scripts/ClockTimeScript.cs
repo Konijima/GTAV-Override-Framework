@@ -12,7 +12,7 @@ namespace GTAVOverride.Scripts
     }
 
     [ScriptAttributes(NoDefaultInstance = true)]
-    public class ClockScript : Script
+    public class ClockTimeScript : Script
     {
 
         private ClockMode _mode;
@@ -21,8 +21,10 @@ namespace GTAVOverride.Scripts
 
         private bool _inited = false;
 
-        public ClockScript()
+        public ClockTimeScript()
         {
+            Pause();
+
             _mode = Settings.GetValue("CLOCK", "MODE", ClockMode.Vanilla);
             Tick += ClockScripts_Tick;
         }
