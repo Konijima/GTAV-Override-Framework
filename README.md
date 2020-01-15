@@ -1,4 +1,4 @@
-# GTAV-Override-KillScript  
+# GTAV-Override  
   
 **What is GTAV Override?**  
 GTAVOverride kill all 515+ scripts when the loading screen has completed. If you manually load a savegame or start a new game you will have to refresh scripts with your hotkey.  
