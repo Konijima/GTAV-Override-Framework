@@ -8,7 +8,10 @@ So the mod try to provide new functionality like persistence and more ways of ma
 Trying to combine this mod with other mod is at your own risk.  
 Try disabling some Scripts in GTAVOverride.ini file if you experience incompatibility.  
   
-The KillScript kills all 515+ scripts when the loading screen has completed. If you manually load a savegame or start a new game you will have to refresh scripts with your hotkey to restart it. You can change the delay before the kill-script is executed. You can also force this mod to ONLY KILL SCRIPTS if it's the only thing you need.  
+The KillScript kills all 515+ scripts when the loading screen has completed. If you manually load a savegame or start a new game you will have to refresh scripts with your hotkey to restart it. You can change the delay before the kill-script is executed. 
+
+You can also force this mod to ONLY KILL SCRIPTS if it's the only thing you need.
+You can now NOT KILL the scripts to use this mod in normal single player, you will need to cherry pick the scripts you enable.
   
 **Requirements & Installation**  
 [ScriptHookV (1.0.1868.0)](http://www.dev-c.com/gtav/scripthookv/)  
