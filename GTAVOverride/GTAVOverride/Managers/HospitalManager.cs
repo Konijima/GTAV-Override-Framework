@@ -22,6 +22,8 @@ namespace GTAVOverride.Managers
 
         public static void CreateDefaultHospitalBlips()
         {
+            Helpers.Log("Creating all Hospitals...");
+
             CreateHospitalBlip(new GTA.Math.Vector3(-474.2133f, -336.6607f, 0f)); // MountZonah
             CreateHospitalBlip(new GTA.Math.Vector3(344.8595f, -1415.773f, 0f)); // CentralLosSantos
             CreateHospitalBlip(new GTA.Math.Vector3(356.6836f, -586.7533f, 0f)); // PillboxHill
@@ -47,6 +49,7 @@ namespace GTAVOverride.Managers
             {
                 blip.Delete();
             }
+            Helpers.Log("Delete all Hospitals...");
         }
 
         public static void ShowHospitalBlips()
@@ -55,6 +58,7 @@ namespace GTAVOverride.Managers
             {
                 blip.Alpha = 255;
             }
+            Helpers.Log("Show all Hospital blips");
         }
 
         public static void HideHospitalBlips()
@@ -63,6 +67,7 @@ namespace GTAVOverride.Managers
             {
                 blip.Alpha = 0;
             }
+            Helpers.Log("Hide all Hospital blips");
         }
 
         public static void EnableHospital(int hospitalId)
@@ -100,6 +105,7 @@ namespace GTAVOverride.Managers
             {
                 EnableHospital(H);
             }
+            Helpers.Log("Enabling all Hospital respawns...");
         }
 
         public static void DisableAllHospitals()
@@ -108,6 +114,7 @@ namespace GTAVOverride.Managers
             {
                 DisableHospital(H);
             }
+            Helpers.Log("Disabling all Hospital respawns...");
         }
 
         public static void EnableAllCustomHospitals()
@@ -116,6 +123,7 @@ namespace GTAVOverride.Managers
             {
                 EnableHospital(H);
             }
+            Helpers.Log("Enabling all custom Hospital respawns...");
         }
 
         public static void DisableAllCustomHospitals()
@@ -124,6 +132,7 @@ namespace GTAVOverride.Managers
             {
                 DisableHospital(H);
             }
+            Helpers.Log("Disabling all custom Hospital respawns...");
         }
     }
 }

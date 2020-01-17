@@ -15,6 +15,7 @@ namespace GTAVOverride.Configs
         private bool _Rob_People_Script = true;
         private bool _Atm_Script = true;
         private bool _Store_Script = true;
+        private bool _Play_Police_Script = false;
         private bool _Waypoint_Tools_Script = false;
 
         public ConfigScripts(ScriptSettings settings)
@@ -36,6 +37,7 @@ namespace GTAVOverride.Configs
             Rob_People_Script = _Rob_People_Script;
             Atm_Script = _Atm_Script;
             Store_Script = _Store_Script;
+            //Play_Police_Script = _Play_Police_Script;
             Waypoint_Tools_Script = _Waypoint_Tools_Script;
             
             _settings.Save();
@@ -51,6 +53,7 @@ namespace GTAVOverride.Configs
             _Rob_People_Script = _settings.GetValue<bool>(_section, "Rob_People_Script", _Rob_People_Script);
             _Atm_Script = _settings.GetValue<bool>(_section, "Atm_Script", _Atm_Script);
             _Store_Script = _settings.GetValue<bool>(_section, "Store_Script", _Store_Script);
+            _Play_Police_Script = _settings.GetValue<bool>(_section, "Play_Police_Script", _Play_Police_Script);
             _Waypoint_Tools_Script = _settings.GetValue<bool>(_section, "Waypoint_Tools_Script", _Waypoint_Tools_Script);
         }
 
@@ -155,6 +158,19 @@ namespace GTAVOverride.Configs
             {
                 _Store_Script = value;
                 _settings.SetValue<bool>(_section, "Store_Script", _Store_Script);
+            }
+        }
+
+        public bool Play_Police_Script
+        {
+            get
+            {
+                return _Play_Police_Script;
+            }
+            set
+            {
+                _Play_Police_Script = value;
+                _settings.SetValue<bool>(_section, "Play_Police_Script", _Play_Police_Script);
             }
         }
 

@@ -44,6 +44,8 @@ namespace GTAVOverride.Managers
 
         public static void CreateStores()
         {
+            Helpers.Log("Creating all Stores...");
+
             CreateStore(new Vector3(27.52871f, -1345.263f, 29.49702f), 91.18019f);
             CreateStore(new Vector3(1162.928f, -323.5625f, 69.20512f), 287.8695f);
             CreateStore(new Vector3(1162.928f, -323.5625f, 69.20512f), 287.8695f);
@@ -67,6 +69,7 @@ namespace GTAVOverride.Managers
             {
                 store.blip.Delete();
             }
+            Helpers.Log("Deleting all Stores blips...");
         }
 
         public static void ShowStoreBlips()
@@ -75,6 +78,7 @@ namespace GTAVOverride.Managers
             {
                 store.Show();
             }
+            Helpers.Log("Show all Stores blips...");
         }
 
         public static void HideStoreBlips(int alpha = 0)
@@ -83,6 +87,7 @@ namespace GTAVOverride.Managers
             {
                 store.Hide(alpha);
             }
+            Helpers.Log("Hide all Stores blips...");
         }
     }
 }

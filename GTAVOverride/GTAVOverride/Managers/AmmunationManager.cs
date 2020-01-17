@@ -36,6 +36,7 @@ namespace GTAVOverride.Managers
 
         public static void CreateAmmunations()
         {
+            Helpers.Log("Creating Ammunations...");
             CreateAmmunation(new Vector3(21.72542f, -1107.191f, 29.79702f), 343.6222f, true); // ammunation pillboxhill
             CreateAmmunation(new Vector3(1693.553f, 3759.291f, 34.70535f), 48.2788f, false); // ammunation sandyshore
             CreateAmmunation(new Vector3(251.7146f, -49.34251f, 69.94105f), 251.1295f, false); // ammunation Vinewood/hawick
@@ -56,6 +57,7 @@ namespace GTAVOverride.Managers
             foreach (Ammunation ammunation in Ammunations)
             {
                 ammunation.blip.Delete();
+                Helpers.Log("Delete all Ammunation blips!");
             }
         }
 
@@ -65,6 +67,7 @@ namespace GTAVOverride.Managers
             {
                 ammunation.blip.Alpha = 255;
             }
+            Helpers.Log("Show all Ammunation blips!");
         }
 
         public static void HideAmmunationBlips()
@@ -72,6 +75,7 @@ namespace GTAVOverride.Managers
             foreach (Ammunation ammunation in Ammunations)
             {
                 ammunation.blip.Alpha = 0;
+                Helpers.Log("Hide all Ammunation blips!");
             }
         }
     }

@@ -9,7 +9,9 @@ namespace GTAVOverride.Configs
         private ScriptSettings _settings;
 
         private bool _Debug_Mode = false;
+        private int _Kill_GTAV_Scripts_Ms_Delay = 0;
         private bool _Kill_GTAV_Scripts_Only = false;
+        private bool _Dont_Kill_GTAV_Scripts = false;
         private ClockMode _Clock_Mode = ClockMode.Virtual;
         private bool _Unlock_All_Doors = true;
         private bool _Hospital_Spawn_OnDeath = true;
@@ -30,7 +32,9 @@ namespace GTAVOverride.Configs
         public void Save()
         {
             Debug_Mode = _Debug_Mode;
+            Kill_GTAV_Scripts_Ms_Delay = _Kill_GTAV_Scripts_Ms_Delay;
             Kill_GTAV_Scripts_Only = _Kill_GTAV_Scripts_Only;
+            Dont_Kill_GTAV_Scripts = _Dont_Kill_GTAV_Scripts;
             Clock_Mode = _Clock_Mode;
             Unlock_All_Doors = _Unlock_All_Doors;
             Hospital_Spawn_OnDeath = _Hospital_Spawn_OnDeath;
@@ -45,7 +49,9 @@ namespace GTAVOverride.Configs
         public void Load()
         {
             _Debug_Mode = _settings.GetValue<bool>(_section, "Debug_Mode", _Debug_Mode);
+            _Kill_GTAV_Scripts_Ms_Delay = _settings.GetValue<int>(_section, "Kill_GTAV_Scripts_Ms_Delay", _Kill_GTAV_Scripts_Ms_Delay);
             _Kill_GTAV_Scripts_Only = _settings.GetValue<bool>(_section, "Kill_GTAV_Scripts_Only", _Kill_GTAV_Scripts_Only);
+            _Dont_Kill_GTAV_Scripts = _settings.GetValue<bool>(_section, "Dont_Kill_GTAV_Scripts", _Dont_Kill_GTAV_Scripts);
             _Clock_Mode = _settings.GetValue<ClockMode>(_section, "Clock_Mode", _Clock_Mode);
             _Unlock_All_Doors = _settings.GetValue<bool>(_section, "Unlock_All_Doors", _Unlock_All_Doors);
             _Hospital_Spawn_OnDeath = _settings.GetValue<bool>(_section, "Hospital_Spawn_OnDeath", _Hospital_Spawn_OnDeath);
@@ -68,6 +74,20 @@ namespace GTAVOverride.Configs
             }
         }
 
+        public int Kill_GTAV_Scripts_Ms_Delay
+        {
+            get
+            {
+                return _Kill_GTAV_Scripts_Ms_Delay;
+            }
+            set
+            {
+                if (value <= 0) value = 0;
+                _Kill_GTAV_Scripts_Ms_Delay = value;
+                _settings.SetValue<int>(_section, "Kill_GTAV_Scripts_Ms_Delay", _Kill_GTAV_Scripts_Ms_Delay);
+            }
+        }
+
         public bool Kill_GTAV_Scripts_Only
         {
             get
@@ -78,6 +98,19 @@ namespace GTAVOverride.Configs
             {
                 _Kill_GTAV_Scripts_Only = value;
                 _settings.SetValue<bool>(_section, "Kill_GTAV_Scripts_Only", _Kill_GTAV_Scripts_Only);
+            }
+        }
+
+        public bool Dont_Kill_GTAV_Scripts
+        {
+            get
+            {
+                return _Dont_Kill_GTAV_Scripts;
+            }
+            set
+            {
+                _Dont_Kill_GTAV_Scripts = value;
+                _settings.SetValue<bool>(_section, "Dont_Kill_GTAV_Scripts", _Dont_Kill_GTAV_Scripts);
             }
         }
 

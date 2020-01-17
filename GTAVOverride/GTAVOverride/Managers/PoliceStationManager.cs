@@ -24,14 +24,17 @@ public enum PoliceStationIds
 
         public static void CreateDefaultPoliceStationBlips()
         {
-            CreatePoliceStationBlip(new GTA.Math.Vector3(-1092.9016113281f, -808.55224609375f, 0f)); // Vespucci Police Station
-            CreatePoliceStationBlip(new GTA.Math.Vector3(363.5834f, -1587.378f, 0f)); // Davis Police Station
-            CreatePoliceStationBlip(new GTA.Math.Vector3(-561.56872558594f, -131.63426208496f, 0f)); // Rockford Hills Police Station
-            CreatePoliceStationBlip(new GTA.Math.Vector3(1852.588f, 3688.816f, 0f)); // Sandy Shores Police Station
-            CreatePoliceStationBlip(new GTA.Math.Vector3(-442.02770996094f, 6018.0600585938f, 0f)); // Paleto Bay Police Station
-            CreatePoliceStationBlip(new GTA.Math.Vector3(639.10504150391f, 1.50139772892f, 0f)); // Vinewood Police Station
-            CreatePoliceStationBlip(new GTA.Math.Vector3(477.90216064453f, -978.20941162109f, 0f)); // Mission Row Police Station
-            //CreatePoliceStationBlip(new GTA.Math.Vector3(826.03479003906f, -1290.1567382813f, 0f)); // La Mesa Police Station
+            Helpers.Log("Creating all Police Stations...");
+            
+
+            CreatePoliceStationBlip(new Vector3(-1092.9016113281f, -808.55224609375f, 0f)); // Vespucci Police Station
+            CreatePoliceStationBlip(new Vector3(363.5834f, -1587.378f, 0f)); // Davis Police Station
+            CreatePoliceStationBlip(new Vector3(-561.56872558594f, -131.63426208496f, 0f)); // Rockford Hills Police Station
+            CreatePoliceStationBlip(new Vector3(1852.588f, 3688.816f, 0f)); // Sandy Shores Police Station
+            CreatePoliceStationBlip(new Vector3(-442.02770996094f, 6018.0600585938f, 0f)); // Paleto Bay Police Station
+            CreatePoliceStationBlip(new Vector3(639.10504150391f, 1.50139772892f, 0f)); // Vinewood Police Station
+            CreatePoliceStationBlip(new Vector3(477.90216064453f, -978.20941162109f, 0f)); // Mission Row Police Station
+            CreatePoliceStationBlip(new Vector3(829.6835f, -1289.895f, 0f)); // La Mesa Police Station
         }
 
         public static Blip CreatePoliceStationBlip(Vector3 position)
@@ -105,6 +108,7 @@ public enum PoliceStationIds
             {
                 EnablePoliceStation(H);
             }
+            Helpers.Log("Enabling all Police Station spawns...");
         }
 
         public static void DisableAllPoliceStations()
@@ -113,6 +117,7 @@ public enum PoliceStationIds
             {
                 DisablePoliceStation(H);
             }
+            Helpers.Log("Disabling all Police Station spawns...");
         }
 
         public static void EnableAllCustomPoliceStations()
@@ -121,6 +126,7 @@ public enum PoliceStationIds
             {
                 EnablePoliceStation(H);
             }
+            Helpers.Log("Enabling all custom Police Station spawns...");
         }
 
         public static void DisableAllCustomPoliceStations()
@@ -129,6 +135,7 @@ public enum PoliceStationIds
             {
                 DisablePoliceStation(H);
             }
+            Helpers.Log("Disabling all custom Police Station spawns...");
         }
     }
 }

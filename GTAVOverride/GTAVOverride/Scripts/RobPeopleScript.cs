@@ -327,13 +327,13 @@ namespace GTAVOverride.Scripts
         public bool CanPlayerRobPeds()
         {
             Ped playerPed = Game.Player.Character;
-            if (playerPed.IsAlive && 
-                playerPed.IsAiming &&
-                !playerPed.IsRagdoll &&
-                (playerPed.IsOnFoot || playerPed.IsOnBike) &&
-                CanRobWithWeapon(playerPed.Weapons.Current))
-                return true;
-            return false;
+            if (!playerPed.IsAlive && 
+                !playerPed.IsAiming &&
+                playerPed.IsRagdoll &&
+                (!playerPed.IsOnFoot && !playerPed.IsOnBike) &&
+                !CanRobWithWeapon(playerPed.Weapons.Current))
+                return false;
+            return true;
         }
 
         public bool CanRobWithWeapon(Weapon weapon)
@@ -350,23 +350,39 @@ namespace GTAVOverride.Scripts
             return false;
         }
 
+        public bool PedIsOk(Ped ped)
+        {
+            if (ped == null ||
+                !ped.IsAlive ||
+                !ped.IsHuman ||
+                ped.IsPersistent ||
+                ped.IsOnFire ||
+                ped.IsInWater ||
+                ped.IsInMeleeCombat ||
+                (!ped.IsOnFoot && !ped.IsOnBike) ||
+                (ped.IsOnBike && ped.CurrentVehicle.Speed > 3f))
+                return false;
+            return true;
+        }
+
+        public bool PedPositionOk(Ped ped)
+        {
+            if (ped.Position.DistanceTo(Game.Player.Character.Position) > 20f)
+                return false;
+            return true;
+        }
+
         public bool CanPedBeRobbed(Ped ped)
         {
-            if (ped != null && 
-                ped.IsAlive &&
-                ped.IsHuman && 
-                CanRobModel(ped.Model) &&
-                !threatenedPed.Contains(ped) &&
-                !robbedPed.Contains(ped) &&
-                !ped.IsOnFire &&
-                !ped.IsInWater &&
-                !ped.IsInMeleeCombat &&
-                (ped.GetRelationshipWithPed(Game.Player.Character) != Relationship.Companion) &&
-                !ped.IsInCombatAgainst(Game.Player.Character) &&
-                ped.Position.DistanceTo(Game.Player.Character.Position) < 20f &&
-                (ped.IsOnFoot || ped.IsOnBike)) 
-                return true;
-            return false;
+            if (!PedIsOk(ped) ||
+                !CanRobModel(ped.Model) ||
+                !CanRobRelationship(ped.RelationshipGroup) ||
+                !PedPositionOk(ped) ||
+                ped.IsInCombatAgainst(Game.Player.Character) ||
+                threatenedPed.Contains(ped) ||
+                robbedPed.Contains(ped))
+                return false;
+            return true;
         }
 
         public bool CanRobModel(Model model)
@@ -377,6 +393,14 @@ namespace GTAVOverride.Scripts
                 model == PedHash.ShopKeep01 ||
                 model == PedHash.ShopLowSFY ||
                 model == PedHash.ShopMidSFY)
+                return false;
+            return true;
+        }
+
+        public bool CanRobRelationship(RelationshipGroup group)
+        {
+            Relationship relation = group.GetRelationshipBetweenGroups(Game.Player.Character.RelationshipGroup.Hash);
+            if (relation == Relationship.Companion)
                 return false;
             return true;
         }

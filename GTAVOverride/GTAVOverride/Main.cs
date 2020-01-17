@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using GTA;
+using GTA.UI;
 using GTAVOverride.Managers;
 using GTAVOverride.Scripts;
 using GTAVOverride.Configs;
+using GTA.Native;
 
 namespace GTAVOverride
 {
@@ -14,117 +16,107 @@ namespace GTAVOverride
         public static ConfigScripts configScripts;
         public static ConfigBlips configBlips;
 
-        private bool _initialized;
         private KillScript _killScript;
         private List<Script> _scripts;
 
         public Main()
         {
+            Helpers.StartLog();
+            Helpers.Log("Mod is initializing...");
+
             configData = new ConfigData(Settings);
             configSettings = new ConfigSettings(Settings);
             configScripts = new ConfigScripts(Settings);
             configBlips = new ConfigBlips(Settings);
 
-            _initialized = false;
-            _scripts = new List<Script>();
+            Helpers.Log("Mod is preparing killscript...");
+            _killScript = new KillScript();
 
+            Function.Call(Hash.CLEAR_ALL_HELP_MESSAGES);
+
+            _scripts = new List<Script>();
             if (configScripts.Atm_Script) _scripts.Add(InstantiateScript<AtmScript>());
             if (configScripts.ClockTime_Script) _scripts.Add(InstantiateScript<ClockTimeScript>());
             if (configScripts.Economy_Script) _scripts.Add(InstantiateScript<EconomyScript>());
             if (configScripts.Player_Death_Arrest_Script) _scripts.Add(InstantiateScript<PlayerDeathArrestScript>());
             if (configScripts.Player_Persistence_Script) _scripts.Add(InstantiateScript<PlayerPersistenceScript>());
-            if (configScripts.Rob_People_Script) _scripts.Add(InstantiateScript<RobPeopleScript>());
+            if (configScripts.Rob_People_Script && !configScripts.Play_Police_Script) _scripts.Add(InstantiateScript<RobPeopleScript>());
             if (configScripts.Store_Script) _scripts.Add(InstantiateScript<StoreScript>());
             if (configScripts.TimeScale_Script) _scripts.Add(InstantiateScript<TimeScaleScript>());
+            if (configScripts.Play_Police_Script) _scripts.Add(InstantiateScript<PlayPoliceScript>());
             if (configScripts.Waypoint_Tools_Script) _scripts.Add(InstantiateScript<WaypointToolsScript>());
 
+            Helpers.Log("Mod is starting update tick...");
             Tick += Main_Tick;
             Aborted += Main_Aborted;
         }
 
         private void Main_Tick(object sender, EventArgs e)
         {
-            if (!Game.IsLoading && _killScript == null)
+            if (!Game.IsLoading && !_killScript.isStarted && !_killScript.isCompleted)
             {
-                GTA.UI.Screen.FadeOut(1);
-                _killScript = InstantiateScript<KillScript>();
-
-                if (configSettings.Kill_GTAV_Scripts_Only)
+                if (Screen.IsFadedIn)
                 {
-                    Helpers.DebugSubtitle("Killing GTAV Scripts Only!", 1000);
-                    Wait(2000);
-                    Abort();
-                    return;
+                    Screen.FadeOut(1);
+                    Wait(1);
                 }
-                else Helpers.DebugSubtitle("Killing GTAV Scripts...", 1000);
-            }
 
-            if (Game.IsLoading)
+                if (!configSettings.Dont_Kill_GTAV_Scripts)
+                {
+                    Helpers.Log("Waiting " + configSettings.Kill_GTAV_Scripts_Ms_Delay + "ms to start killscript...");
+                    Wait(configSettings.Kill_GTAV_Scripts_Ms_Delay);
+
+                    _killScript.Run();
+
+                    if (configSettings.Kill_GTAV_Scripts_Only)
+                    {
+                        Helpers.Log("Kill Scripts only is enabled, not continuing mod initialization...");
+                        Abort();
+                    }
+                }
+                else _killScript.DontRun();
+
+                Initialize();
+            }
+            else if (Game.IsLoading && _killScript.isCompleted)
             {
-                if (_initialized) Abort();
+                Helpers.Log("Mod stopped due to loading screen re-openned!");
+                Abort();
                 return;
-            }
-
-            if (_killScript != null && _initialized == false)
-            {
-                InitializeManagers();
-                Wait(1000);
-                StartScripts();
-                Wait(1000);
-                DebugInit();
-                _initialized = true;
             }
         }
 
         private void Main_Aborted(object sender, EventArgs e)
         {
-            StopScripts();
-            ClearAllBlips();
-        }
+            Helpers.Log("Mod is aborting...");
 
-        private void DebugInit()
-        {
-            Game.MaxWantedLevel = 5;
-            Game.Player.WantedLevel = 0;
-            Game.Player.IsInvincible = false;
-            Game.Player.Character.IsInvincible = Game.Player.IsInvincible;
-            Game.Player.Character.Weapons.Give(WeaponHash.Bat, 1, true, false);
-            Game.Player.Character.Weapons.Give(WeaponHash.Grenade, 500, true, true);
-            Game.Player.Character.Weapons.Give(WeaponHash.Pistol, 500, true, true);
-            Game.Player.Character.Weapons.Give(WeaponHash.AssaultRifle, 500, true, true);
-            Game.Player.Character.Weapons.Give(WeaponHash.DoubleBarrelShotgun, 500, true, true);
-        }
-
-        private void StartScripts()
-        {
-            int startedCount = 0;
-            foreach (Script script in _scripts)
+            if (!configSettings.Dont_Kill_GTAV_Scripts)
+                ClearAllBlips();
+            else
             {
-                if (script.IsRunning)
-                {
-                    script.Resume();
-                    startedCount++;
-                }
+                AtmManager.DeleteATMBlips();
+                StoreManager.DeleteStoreBlips();
+                HospitalManager.DeleteHospitalBlips();
+                PoliceStationManager.DeletePoliceStationBlips();
+                AmmunationManager.DeleteAmmunationBlips();
             }
-            Helpers.DebugSubtitle("Started " + startedCount + " script(s).", 1000);
+
+            Helpers.EndLog();
         }
 
-        private void StopScripts()
+        private void Initialize()
         {
-            int stoppedCount = 0;
-            foreach (Script script in _scripts)
-            {
-                if (script.IsRunning)
-                {
-                    script.Pause();
-                    stoppedCount++;
-                }
-            }
-            Helpers.DebugSubtitle("Stopped " + stoppedCount + " script(s).", 1000);
+            InitializeManagers();
+            StartScripts();
+            DebugInit();
+
+            Helpers.Log("Mod has initialized!");
         }
 
         private void InitializeManagers()
         {
+            Helpers.Log("Initializing managers...");
+
             foreach (Script script in _scripts)
             {
                 // ClockScript Init
@@ -157,10 +149,57 @@ namespace GTAVOverride
             if (!configBlips.Show_Stores) StoreManager.HideStoreBlips();
         }
 
+        private void DebugInit()
+        {
+            if (configSettings.Debug_Mode)
+            {
+                Game.MaxWantedLevel = 5;
+                Game.Player.WantedLevel = 0;
+                Game.Player.IsInvincible = false;
+                Game.Player.Character.IsInvincible = Game.Player.IsInvincible;
+                Game.Player.Character.Weapons.Give(WeaponHash.Bat, 1, true, false);
+                Game.Player.Character.Weapons.Give(WeaponHash.Grenade, 500, true, true);
+                Game.Player.Character.Weapons.Give(WeaponHash.Pistol, 500, true, true);
+                Game.Player.Character.Weapons.Give(WeaponHash.AssaultRifle, 500, true, true);
+                Game.Player.Character.Weapons.Give(WeaponHash.DoubleBarrelShotgun, 500, true, true);
+
+                Helpers.Log("Debug mode activated!");
+            }
+        }
+
+        private void StartScripts()
+        {
+            Helpers.Log("Starting scripts...");
+            int startedCount = 0;
+            foreach (Script script in _scripts)
+            {
+                if (script.IsRunning)
+                {
+                    script.Resume();
+                    startedCount++;
+                }
+            }
+            Helpers.Log("Started (" + startedCount + ") mod script(s).");
+        }
+
+        private void StopScripts()
+        {
+            Helpers.Log("Stopping scripts...");
+            int stoppedCount = 0;
+            foreach (Script script in _scripts)
+            {
+                if (script.IsRunning)
+                {
+                    script.Pause();
+                    stoppedCount++;
+                }
+            }
+            Helpers.Log("Stopped (" + stoppedCount + ") mod script(s).");
+        }
+
         private void ClearAllBlips()
         {
-            PlayerManager.Save();
-            Wait(1000);
+            Helpers.Log("Clearing all blips...");
 
             Blip[] blips = World.GetAllBlips();
             foreach (Blip blip in blips)

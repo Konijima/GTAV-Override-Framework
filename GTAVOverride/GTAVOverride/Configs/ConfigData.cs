@@ -11,9 +11,10 @@ namespace GTAVOverride.Configs
         private string _Save_Player_Filename = "player0";
         private bool _Auto_Save_Enabled = true;
         private int _Auto_Save_Delay = 15000;
+        private bool _Auto_Save_Show_Spinner_text = true;
         private bool _Auto_Save_After_DeathArrest = true;
         private bool _Auto_Save_When_Wanted = false;
-        private bool _Auto_Save_In_Vehicle = false;
+        private bool _Auto_Save_In_Vehicle = true;
         private bool _Auto_Save_On_Transaction = true;
 
         public ConfigData(ScriptSettings settings)
@@ -31,6 +32,7 @@ namespace GTAVOverride.Configs
             Save_Player_Filename = _Save_Player_Filename;
             Auto_Save_Enabled = _Auto_Save_Enabled;
             Auto_Save_Delay = _Auto_Save_Delay;
+            Auto_Save_Show_Spinner_text = _Auto_Save_Show_Spinner_text;
             Auto_Save_After_DeathArrest = _Auto_Save_After_DeathArrest;
             Auto_Save_When_Wanted = _Auto_Save_When_Wanted;
             Auto_Save_In_Vehicle = _Auto_Save_In_Vehicle;
@@ -45,6 +47,7 @@ namespace GTAVOverride.Configs
             _Save_Player_Filename = _settings.GetValue(_section, "Save_Player_Filename", _Save_Player_Filename);
             _Auto_Save_Enabled = _settings.GetValue(_section, "Auto_Save_Enabled", _Auto_Save_Enabled);
             _Auto_Save_Delay = _settings.GetValue(_section, "Auto_Save_Delay", _Auto_Save_Delay);
+            _Auto_Save_Show_Spinner_text = _settings.GetValue(_section, "Auto_Save_Show_Spinner_text", _Auto_Save_Show_Spinner_text);
             _Auto_Save_After_DeathArrest = _settings.GetValue(_section, "Auto_Save_After_DeathArrest", _Auto_Save_After_DeathArrest);
             _Auto_Save_When_Wanted = _settings.GetValue(_section, "Auto_Save_When_Wanted", _Auto_Save_When_Wanted);
             _Auto_Save_In_Vehicle = _settings.GetValue(_section, "Auto_Save_In_Vehicle", _Auto_Save_In_Vehicle);
@@ -100,6 +103,19 @@ namespace GTAVOverride.Configs
             {
                 _Auto_Save_Delay = value;
                 _settings.SetValue(_section, "Auto_Save_Delay", _Auto_Save_Delay);
+            }
+        }
+
+        public bool Auto_Save_Show_Spinner_text
+        {
+            get
+            {
+                return _Auto_Save_Show_Spinner_text;
+            }
+            set
+            {
+                _Auto_Save_Show_Spinner_text = value;
+                _settings.SetValue(_section, "Auto_Save_Show_Spinner_text", _Auto_Save_Show_Spinner_text);
             }
         }
 

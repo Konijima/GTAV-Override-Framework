@@ -1,19 +1,54 @@
 ﻿using System;
+using System.IO;
+using System.Drawing;
 using System.Collections.Generic;
-using System.Text;
 using GTA;
 using GTA.UI;
 using GTA.Math;
 using GTA.Native;
 using GTAVOverride.Functions;
-using System.Drawing;
 
 namespace GTAVOverride
 {
     public static class Helpers
     {
+        private static DateTime startTime;
+        private static List<string> logs;
 
         public static Random Random = new Random();
+
+        public static void StartLog()
+        {
+            if (logs == null)
+            {
+                logs = new List<string>();
+
+                startTime = DateTime.Now;
+
+                logs.Add("========================================================");
+                logs.Add("Log start time " + startTime.ToLongTimeString());
+                logs.Add("========================================================");
+            }
+        }
+
+        public static void Log(string text)
+        {
+            if (logs != null) logs.Add(DateTime.Now.ToLongTimeString() + ": " + text);
+        }
+
+        public static void EndLog()
+        {
+            if (logs != null)
+            {
+                logs.Add("========================================================");
+                logs.Add("Log end time " + DateTime.Now.ToLongTimeString());
+
+                string path = "scripts/GTAVOverrideData/logs";
+                string filename = "GTAVOverride";
+                if (!Directory.Exists(path)) Directory.CreateDirectory(path);
+                File.WriteAllLines(Path.Combine(path, filename) + "-" + startTime.Hour + "-" + startTime.Minute + "-" + startTime.Second + ".log", logs);
+            }
+        }
 
         public static void DrawText(Vector2 position, string text)
         {
@@ -50,12 +85,6 @@ namespace GTAVOverride
             {
                 GTA.UI.Screen.ShowSubtitle(text, delay);
             }
-        }
-
-        public static void TeleportPed(Ped ped, Vector3 position, float heading, bool safe = false, bool fade = true, int fadeSpeed = 1000)
-        {
-            TeleportFunction teleport = Script.InstantiateScript<TeleportFunction>();
-            teleport.Prepare(ped, position, heading, safe, fade, fadeSpeed);
         }
     }
 }

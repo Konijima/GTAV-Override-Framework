@@ -5,38 +5,55 @@ using GTA.Native;
 
 namespace GTAVOverride
 {
-    [ScriptAttributes(NoDefaultInstance = true)]
-    public class KillScript : Script
+    public class KillScript
     {
-        private int delay = 10;
+        private bool _started;
+        private bool _completed;
 
         public KillScript()
         {
-            Interval = 10;
-
-            delay = Settings.GetValue<int>("killscript", "delay", delay);
-            Settings.SetValue<int>("killscript", "delay", delay);
-            Settings.Save();
-
-            Tick += KillScript_Tick;
+            _started = false;
+            _completed = false;
         }
 
-        private void KillScript_Tick(object sender, EventArgs e)
+        public bool isStarted
         {
-            if (Game.IsLoading == false && Game.Player.Character != null)
+            get { return _started; }
+        }
+
+        public bool isCompleted
+        {
+            get { return _completed; }
+        }
+
+        public void DontRun()
+        {
+            _completed = true;
+        }
+
+        public void Run()
+        {
+            if (_started || _completed) return;
+
+            _started = true;
+
+            if (!Game.IsLoading && Game.Player.Character != null)
             {
-                Wait(delay);
+                Helpers.Log("Killscript starting...");
 
                 if (Game.IsCutsceneActive)
                 {
                     Function.Call(Hash.STOP_CUTSCENE_IMMEDIATELY);
+                    Helpers.Log("Killscript has stopped active cutscene.");
                 }
                 else
                 {
                     Function.Call(Hash.DESTROY_MOBILE_PHONE);
+                    Helpers.Log("Killscript has destroyed active phone if one was active.");
                 }
 
                 // kill
+                int killCount = 0;
                 foreach (String script in GTAV_Scripts)
                 {
                     int scriptHash = Game.GenerateHash(script);
@@ -47,19 +64,46 @@ namespace GTAVOverride
                             Function.Call(Hash.SET_SCRIPT_AS_NO_LONGER_NEEDED, script);
                             Function.Call(Hash.SET_SCRIPT_WITH_NAME_HASH_AS_NO_LONGER_NEEDED, scriptHash);
                             Function.Call(Hash.TERMINATE_ALL_SCRIPTS_WITH_THIS_NAME, script);
+                            killCount++;
                         }
                     }
+
+                }
+                Helpers.Log("Killscript killed (" + killCount + ") GTAV Scripts.");
+
+                if (Game.IsMissionActive)
+                {
+                    Game.IsMissionActive = false;
+                    Helpers.Log("Killscript stopped active mission.");
+                }
+                if (!Game.Player.CanControlCharacter)
+                {
+                    Game.Player.CanControlCharacter = true;
+                    Helpers.Log("Killscript give control to player character.");
+                }
+                if (!Hud.IsRadarVisible)
+                {
+                    Hud.IsRadarVisible = true;
+                    Helpers.Log("Killscript enabled Radar.");
+                }
+                if (!Hud.IsVisible)
+                {
+                    Hud.IsVisible = true;
+                    Helpers.Log("Killscript enabled HUD.");
                 }
 
-                Game.IsMissionActive = false;
-                Game.Player.CanControlCharacter = true;
-                Hud.IsRadarVisible = true;
-                Hud.IsVisible = true;
+                if (Main.configSettings.Kill_GTAV_Scripts_Only)
+                {
+                    Screen.FadeIn(500);
+                }
 
-                Abort();
+                Helpers.Log("Killscript has completed!");
+
+                _completed = true;
             }
         }
 
+        // GTAV Scripts
         public String[] GTAV_Scripts = {
             "abigail1",
             "abigail2",

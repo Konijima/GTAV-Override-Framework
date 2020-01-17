@@ -25,7 +25,6 @@ namespace GTAVOverride.Scripts
         {
             Pause();
 
-            _mode = Settings.GetValue("CLOCK", "MODE", ClockMode.Vanilla);
             Tick += ClockScripts_Tick;
         }
 
@@ -39,28 +38,27 @@ namespace GTAVOverride.Scripts
             _mode = mode;
         }
 
+        public void SetTimerate(float timerate)
+        {
+            _timerate = timerate;
+        }
+
         private void ClockScripts_Tick(object sender, EventArgs e)
         {
-            if (!_inited)
-            {
-                Init();
-            }
+            if (!_inited) Init();
 
-            if (_mode == ClockMode.Sync)
+            if (_inited)
             {
-                date = DateTime.Now;
-                time = date.TimeOfDay;
-            }
-            else
-            {
-                if (_mode == ClockMode.Vanilla)
+                if (_mode == ClockMode.Sync)
                 {
-                    Freeze(false);
+                    date = DateTime.Now;
+                    time = date.TimeOfDay;
                 }
+                else if (_mode == ClockMode.Vanilla) Freeze(false);
                 else
                 {
                     Freeze(true);
-                    if (Game.GameTime > _timer)
+                    if (!Game.IsPaused && Game.GameTime > _timer)
                     {
                         _timer = Game.GameTime + (int)Math.Round(1000 * _timerate);
                         Function.Call(Hash.ADD_TO_CLOCK_TIME, 0, 0, 1);

@@ -72,6 +72,7 @@ namespace GTAVOverride.Managers
 
         public static void CreateATMs()
         {
+            Helpers.Log("Creating ATMs...");
             CreateATM(new Vector3(-1109.797f, -1690.808f, 4.375014f), 122.9616f);
             CreateATM(new Vector3(-821.6062f, -1081.885f, 11.13243f), 29.3056f);
             CreateATM(new Vector3(-537.8409f, -854.5145f, 29.28953f), 182.9156f);
@@ -157,6 +158,7 @@ namespace GTAVOverride.Managers
             {
                 atm.blip.Delete();
             }
+            Helpers.Log("Delete all ATM blips!");
         }
 
         public static void ShowATMBlips()
@@ -165,6 +167,7 @@ namespace GTAVOverride.Managers
             {
                 atm.blip.Alpha = 255;
             }
+            Helpers.Log("Show all ATM blips!");
         }
 
         public static void HideATMBlips()
@@ -173,6 +176,7 @@ namespace GTAVOverride.Managers
             {
                 atm.blip.Alpha = 0;
             }
+            Helpers.Log("Hide all ATM blips!");
         }
 
         public static void BreakATM(ATM atm)

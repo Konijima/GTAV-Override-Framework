@@ -50,11 +50,13 @@ namespace GTAVOverride.Managers
 
         public static void CreateDoors()
         {
+            Helpers.Log("Creating Doors...");
+
             doors.Add(new Door("Prologue", "v_ilev_cd_door", 1438783233, new Vector3(5307.52f, -5204.539f, 83.6686f)));
             doors.Add(new Door("Prologue", "v_ilev_cd_door", 1017370378, new Vector3(5310.12f, -5204.54f, 83.67f)));
             doors.Add(new Door("Prologue", "v_ilev_cd_door2", -551608542, new Vector3(5316.65f, -5205.74f, 83.67f)));
             doors.Add(new Door("Prologue", "v_ilev_cd_door3", -551608542, new Vector3(5305.46f, -5177.75f, 83.67f)));
-           // doors.Add(new Door("Prologue", "v_ilev_cd_entrydoor", 348593192, new Vector3(5318.18f, -5185.113f, 83.66864f)));
+            // doors.Add(new Door("Prologue", "v_ilev_cd_entrydoor", 348593192, new Vector3(5318.18f, -5185.113f, 83.66864f)));
 
             // Ammunation PillboxHill
             doors.Add(new Door("Ammunation01", "v_ilev_gc_door04", 97297972, new Vector3(16.12787f, -1114.606f, 29.94694f)));
@@ -96,6 +98,7 @@ namespace GTAVOverride.Managers
             {
                 door.Open();
             }
+            Helpers.Log("Opening all Doors...");
         }
 
         public static void CloseAll()
@@ -104,6 +107,7 @@ namespace GTAVOverride.Managers
             {
                 door.Close();
             }
+            Helpers.Log("Closing all Doors...");
         }
 
         public static void UnlockAll()
@@ -112,6 +116,7 @@ namespace GTAVOverride.Managers
             {
                 door.Unlock();
             }
+            Helpers.Log("Unlocking all Doors...");
         }
 
         public static void LockAll()
@@ -120,6 +125,7 @@ namespace GTAVOverride.Managers
             {
                 door.Lock();
             }
+            Helpers.Log("Locking all Doors...");
         }
     }
 }
