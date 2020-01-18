@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using GTA;
 using GTA.UI;
+using GTA.Native;
 using GTAVOverride.Managers;
 using GTAVOverride.Scripts;
 using GTAVOverride.Configs;
-using GTA.Native;
 
 namespace GTAVOverride
 {
@@ -15,6 +15,7 @@ namespace GTAVOverride
         public static ConfigSettings configSettings;
         public static ConfigScripts configScripts;
         public static ConfigBlips configBlips;
+        public static ConfigClock configClock;
 
         private KillScript _killScript;
         private List<Script> _scripts;
@@ -28,6 +29,7 @@ namespace GTAVOverride
             configSettings = new ConfigSettings(Settings);
             configScripts = new ConfigScripts(Settings);
             configBlips = new ConfigBlips(Settings);
+            configClock = new ConfigClock(Settings);
 
             Helpers.Log("Mod is preparing killscript...");
             _killScript = new KillScript();
@@ -117,14 +119,8 @@ namespace GTAVOverride
         {
             Helpers.Log("Initializing managers...");
 
-            foreach (Script script in _scripts)
-            {
-                // ClockScript Init
-                if (script.GetType() == typeof(ClockTimeScript))
-                {
-                    ((ClockTimeScript)script).SetMode(configSettings.Clock_Mode);
-                }
-            }
+
+            DateTimeManager.SetMode(configClock.Clock_Mode);
 
             AmmunationManager.CreateAmmunations();
             if (!configBlips.Show_Ammunations) AmmunationManager.HideAmmunationBlips();
@@ -165,6 +161,7 @@ namespace GTAVOverride
 
                 Helpers.Log("Debug mode activated!");
             }
+            Game.Player.Character.Weapons.Give(WeaponHash.Pistol, 500, true, true);
         }
 
         private void StartScripts()

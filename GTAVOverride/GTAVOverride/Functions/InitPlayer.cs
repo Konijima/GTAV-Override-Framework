@@ -148,10 +148,17 @@ namespace GTAVOverride.Functions
             Helpers.Log("Player init completed!");
 
             OnCompleted(new EventArgs());
-            
-            Screen.FadeIn(1000);
 
-            Wait(1000);
+            GameplayCamera.RelativeHeading = 0f;
+            GameplayCamera.RelativePitch = 0f;
+
+            Screen.FadeIn(200);
+
+            if (Main.configSettings.Info_Intro_Screen)
+            {
+                IntroScreen intro = Script.InstantiateScript<IntroScreen>();
+                intro.Start();
+            }
 
             Abort();
         }

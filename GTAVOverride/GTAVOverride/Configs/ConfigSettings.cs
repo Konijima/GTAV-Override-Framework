@@ -1,4 +1,5 @@
 ﻿using GTA;
+using GTAVOverride.Managers;
 using GTAVOverride.Scripts;
 
 namespace GTAVOverride.Configs
@@ -12,7 +13,8 @@ namespace GTAVOverride.Configs
         private int _Kill_GTAV_Scripts_Ms_Delay = 0;
         private bool _Kill_GTAV_Scripts_Only = false;
         private bool _Dont_Kill_GTAV_Scripts = false;
-        private ClockMode _Clock_Mode = ClockMode.Virtual;
+        private bool _Info_Intro_Screen = true;
+        private int _Info_Intro_Screen_Ms_Duration = 4000;
         private bool _Unlock_All_Doors = true;
         private bool _Hospital_Spawn_OnDeath = true;
         private bool _PoliceStation_Spawn_OnArrest = true;
@@ -35,7 +37,8 @@ namespace GTAVOverride.Configs
             Kill_GTAV_Scripts_Ms_Delay = _Kill_GTAV_Scripts_Ms_Delay;
             Kill_GTAV_Scripts_Only = _Kill_GTAV_Scripts_Only;
             Dont_Kill_GTAV_Scripts = _Dont_Kill_GTAV_Scripts;
-            Clock_Mode = _Clock_Mode;
+            Info_Intro_Screen = _Info_Intro_Screen;
+            Info_Intro_Screen_Ms_Duration = _Info_Intro_Screen_Ms_Duration;
             Unlock_All_Doors = _Unlock_All_Doors;
             Hospital_Spawn_OnDeath = _Hospital_Spawn_OnDeath;
             PoliceStation_Spawn_OnArrest = _PoliceStation_Spawn_OnArrest;
@@ -48,17 +51,18 @@ namespace GTAVOverride.Configs
 
         public void Load()
         {
-            _Debug_Mode = _settings.GetValue<bool>(_section, "Debug_Mode", _Debug_Mode);
-            _Kill_GTAV_Scripts_Ms_Delay = _settings.GetValue<int>(_section, "Kill_GTAV_Scripts_Ms_Delay", _Kill_GTAV_Scripts_Ms_Delay);
-            _Kill_GTAV_Scripts_Only = _settings.GetValue<bool>(_section, "Kill_GTAV_Scripts_Only", _Kill_GTAV_Scripts_Only);
-            _Dont_Kill_GTAV_Scripts = _settings.GetValue<bool>(_section, "Dont_Kill_GTAV_Scripts", _Dont_Kill_GTAV_Scripts);
-            _Clock_Mode = _settings.GetValue<ClockMode>(_section, "Clock_Mode", _Clock_Mode);
-            _Unlock_All_Doors = _settings.GetValue<bool>(_section, "Unlock_All_Doors", _Unlock_All_Doors);
-            _Hospital_Spawn_OnDeath = _settings.GetValue<bool>(_section, "Hospital_Spawn_OnDeath", _Hospital_Spawn_OnDeath);
-            _PoliceStation_Spawn_OnArrest = _settings.GetValue<bool>(_section, "PoliceStation_Spawn_OnArrest", _PoliceStation_Spawn_OnArrest);
-            _Quick_Rob_People_No_Pickup = _settings.GetValue<bool>(_section, "Quick_Rob_People_No_Pickup", _Quick_Rob_People_No_Pickup);
-            _Randomize_People_Money = _settings.GetValue<bool>(_section, "Randomize_People_Money", _Randomize_People_Money);
-            _Randomize_People_MaxMoney = _settings.GetValue<int>(_section, "Randomize_People_MaxMoney", _Randomize_People_MaxMoney);
+            _Debug_Mode = _settings.GetValue(_section, "Debug_Mode", _Debug_Mode);
+            _Kill_GTAV_Scripts_Ms_Delay = _settings.GetValue(_section, "Kill_GTAV_Scripts_Ms_Delay", _Kill_GTAV_Scripts_Ms_Delay);
+            _Kill_GTAV_Scripts_Only = _settings.GetValue(_section, "Kill_GTAV_Scripts_Only", _Kill_GTAV_Scripts_Only);
+            _Dont_Kill_GTAV_Scripts = _settings.GetValue(_section, "Dont_Kill_GTAV_Scripts", _Dont_Kill_GTAV_Scripts);
+            _Info_Intro_Screen = _settings.GetValue(_section, "Info_Intro_Screen", _Info_Intro_Screen);
+            _Info_Intro_Screen_Ms_Duration = _settings.GetValue(_section, "Info_Intro_Screen_Ms_Duration", _Info_Intro_Screen_Ms_Duration);
+            _Unlock_All_Doors = _settings.GetValue(_section, "Unlock_All_Doors", _Unlock_All_Doors);
+            _Hospital_Spawn_OnDeath = _settings.GetValue(_section, "Hospital_Spawn_OnDeath", _Hospital_Spawn_OnDeath);
+            _PoliceStation_Spawn_OnArrest = _settings.GetValue(_section, "PoliceStation_Spawn_OnArrest", _PoliceStation_Spawn_OnArrest);
+            _Quick_Rob_People_No_Pickup = _settings.GetValue(_section, "Quick_Rob_People_No_Pickup", _Quick_Rob_People_No_Pickup);
+            _Randomize_People_Money = _settings.GetValue(_section, "Randomize_People_Money", _Randomize_People_Money);
+            _Randomize_People_MaxMoney = _settings.GetValue(_section, "Randomize_People_MaxMoney", _Randomize_People_MaxMoney);
         }
 
         public bool Debug_Mode
@@ -114,16 +118,29 @@ namespace GTAVOverride.Configs
             }
         }
 
-        public ClockMode Clock_Mode
+        public bool Info_Intro_Screen
         {
             get
             {
-                return _Clock_Mode;
+                return _Info_Intro_Screen;
             }
             set
             {
-                _Clock_Mode = value;
-                _settings.SetValue<ClockMode>(_section, "Clock_Mode", _Clock_Mode);
+                _Info_Intro_Screen = value;
+                _settings.SetValue<bool>(_section, "Info_Intro_Screen", _Info_Intro_Screen);
+            }
+        }
+
+        public int Info_Intro_Screen_Ms_Duration
+        {
+            get
+            {
+                return _Info_Intro_Screen_Ms_Duration;
+            }
+            set
+            {
+                _Info_Intro_Screen_Ms_Duration = value;
+                _settings.SetValue<int>(_section, "Info_Intro_Screen_Ms_Duration", _Info_Intro_Screen_Ms_Duration);
             }
         }
 

@@ -6,6 +6,7 @@ using GTA.UI;
 using GTA.Math;
 using GTA.Native;
 using System.Drawing;
+using GTAVOverride.Managers;
 
 namespace GTAVOverride.Scripts
 {
@@ -141,8 +142,11 @@ namespace GTAVOverride.Scripts
 
                             if (Main.configSettings.Debug_Mode)
                             {
-                                Helpers.DrawText3D(targetPed.Position, new Vector3(0, 0, -1.15f), "   Speed: " + intimidationSpeed.ToString());
-                                Helpers.DrawText3D(targetPed.Position, new Vector3(0, 0, -1.3f), "Progress: " + totalIntimidation.ToString() + "/" + tolerence.ToString());
+                                if (targetPed.IsVisible)
+                                {
+                                    Helpers.DrawText3D(targetPed.Position, new Vector3(0, 0, -1.45f), intimidationSpeed.ToString());
+                                    Helpers.DrawText3D(targetPed.Position, new Vector3(0, 0, -1.3f), totalIntimidation.ToString("0") + "/" + tolerence.ToString("0"));
+                                }
                             }
 
                             if (targetPed.IsInVehicle()) targetPed.Task.LeaveVehicle(LeaveVehicleFlags.LeaveDoorOpen);
@@ -296,8 +300,8 @@ namespace GTAVOverride.Scripts
                     }
                 }
                 
-                Helpers.DrawText(new Vector2(0.1f, 0.1f), "ThreathenPeds: " + threatenedPed.Count.ToString());
-                Helpers.DrawText(new Vector2(0.1f, 0.15f), "RobbedPeds: " + robbedPed.Count.ToString());
+                Helpers.DrawText(new Vector2(0.015f, 0.1f), "ThreathenPeds List Count: " + threatenedPed.Count.ToString());
+                Helpers.DrawText(new Vector2(0.015f, 0.12f), "RobbedPeds List Count: " + robbedPed.Count.ToString());
             }
 
             if (CanPlayerRobPeds())
@@ -308,6 +312,7 @@ namespace GTAVOverride.Scripts
                 if (entity != null && entity.Model.IsPed)
                 {
                     Ped ped = (Ped)entity;
+
                     if (CanPedBeRobbed(ped))
                     {
                         ThreathenPed(ped);
@@ -327,11 +332,13 @@ namespace GTAVOverride.Scripts
         public bool CanPlayerRobPeds()
         {
             Ped playerPed = Game.Player.Character;
-            if (!playerPed.IsAlive && 
-                !playerPed.IsAiming &&
-                playerPed.IsRagdoll &&
-                (!playerPed.IsOnFoot && !playerPed.IsOnBike) &&
-                !CanRobWithWeapon(playerPed.Weapons.Current))
+
+            if (!playerPed.IsAlive ||
+                !playerPed.IsAiming ||
+                playerPed.IsRagdoll ||
+                Game.Player.Character.IsInMeleeCombat ||
+                !CanRobWithWeapon(playerPed.Weapons.Current) ||
+                (!playerPed.IsOnFoot && !playerPed.IsOnBike))
                 return false;
             return true;
         }

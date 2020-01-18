@@ -11,6 +11,7 @@ namespace GTAVOverride.Managers
 {
     public class PlayerJson
     {
+        public Weather GameWeather { get; set; }
         public DateTime GameDate { get; set; }
         public TimeSpan GameTime { get; set; }
         public int OnFootCameraMode { get; set; }
@@ -38,8 +39,9 @@ namespace GTAVOverride.Managers
             Player player = Game.Player;
             Ped ped = Game.Player.Character;
 
-            GameDate = World.CurrentDate;
-            GameTime = World.CurrentTimeOfDay;
+            GameWeather = World.Weather;
+            GameDate = DateTimeManager.CurrentDate;
+            GameTime = DateTimeManager.CurrentTime;
 
             OnFootCameraMode = Function.Call<int>(GTA.Native.Hash.GET_FOLLOW_PED_CAM_VIEW_MODE);
             InVehicleCameraMode = Function.Call<int>(GTA.Native.Hash.GET_FOLLOW_VEHICLE_CAM_VIEW_MODE);
@@ -77,8 +79,9 @@ namespace GTAVOverride.Managers
 
             if (!Main.configData.Auto_Save_When_Wanted) Game.Player.WantedLevel = 0;
 
-            World.CurrentDate = GameDate;
-            World.CurrentTimeOfDay = GameTime;
+            World.Weather = GameWeather;
+            DateTimeManager.SetDate(GameDate);
+            DateTimeManager.SetTime(GameTime);
 
             Function.Call(GTA.Native.Hash.SET_FOLLOW_PED_CAM_VIEW_MODE, OnFootCameraMode);
             Function.Call(GTA.Native.Hash.SET_FOLLOW_VEHICLE_CAM_VIEW_MODE, InVehicleCameraMode);
@@ -197,6 +200,10 @@ namespace GTAVOverride.Managers
 
     public static class PlayerManager
     {
+        private static int lastSave = 0;
+        private static int saveDelay = Main.configData.Auto_Save_Delay;
+
+
         private static bool loaded = false;
         private static string saveFilePath = "GTAVOverrideData";
         private static string playerFileName = "playersave.player0";
@@ -206,51 +213,78 @@ namespace GTAVOverride.Managers
 
         public static void ReplacePersonalVehicle(Vehicle vehicle)
         {
-            if (vehicle == null || !vehicle.Exists()) return;
+            RemoveVehicleBlips(CurrentPlayerVehicle);
+            RemoveVehicleBlips(vehicle);
 
-            if (CurrentPlayerVehicle != vehicle)
+            if (CurrentPlayerVehicle != null)
             {
-                Helpers.Log("Replacing personal vehicle...");
-                if (CurrentPlayerVehicle != null && CurrentPlayerVehicle.IsAlive && CurrentPlayerVehicle.AttachedBlip != null)
-                {
-                    Helpers.Log("Removing last personal vehicle blip...");
-                    CurrentPlayerVehicle.AttachedBlip.Alpha = 0;
-                }
-
-                if (CurrentPlayerVehicle != null)
-                {
-                    Helpers.Log("Removing last personal vehicle...");
-                    CurrentPlayerVehicle.IsPersistent = false;
-
-                    if (CurrentPlayerVehicle.AttachedBlip != null) CurrentPlayerVehicle.AttachedBlip.Alpha = 0;
-                }
-
-                Helpers.Log("Setting new car as personal vehicle...");
-                CurrentPlayerVehicle = vehicle;
-
-                if (CurrentPlayerVehicle.AttachedBlip == null)
-                {
-                    Helpers.Log("New car blip not found we create it...");
-                    Blip blip = vehicle.AddBlip();
-                    if (CurrentPlayerVehicle.Model.IsBike) blip.Sprite = BlipSprite.GangBike;
-                    else if (CurrentPlayerVehicle.Model.IsBicycle) blip.Sprite = BlipSprite.PersonalVehicleBike;
-                    else if (CurrentPlayerVehicle.Model.IsQuadBike) blip.Sprite = BlipSprite.QuadBike;
-                    else if (CurrentPlayerVehicle.Model.IsCar) blip.Sprite = BlipSprite.PersonalVehicleCar;
-                    else if (CurrentPlayerVehicle.Model.IsHelicopter) blip.Sprite = BlipSprite.Helicopter;
-                    else if (CurrentPlayerVehicle.Model.IsPlane) blip.Sprite = BlipSprite.Plane;
-                    else if (CurrentPlayerVehicle.Model.IsBoat) blip.Sprite = BlipSprite.Boat;
-                    else if (CurrentPlayerVehicle.Model.IsBlimp) blip.Sprite = BlipSprite.Blimp;
-                    else if (CurrentPlayerVehicle.Model.IsCargobob) blip.Sprite = BlipSprite.Cargobob;
-                    else blip.Sprite = BlipSprite.PersonalVehicleCar;
-
-                    blip.Color = BlipColor.White;
-                    blip.Name = "Last Vehicle";
-                    blip.Scale = 1;
-                }
+                Helpers.Log("Removing last personal vehicle...");
+                CurrentPlayerVehicle.IsPersistent = false;
+                CurrentPlayerVehicle.MarkAsNoLongerNeeded();
             }
 
-            if (Game.Player.Character.IsInVehicle(CurrentPlayerVehicle)) vehicle.AttachedBlip.Alpha = 0;
-            else vehicle.AttachedBlip.Alpha = 255;
+            CurrentPlayerVehicle = vehicle;
+            CurrentPlayerVehicle.IsPersistent = true;
+            SetPersonalVehicleBlip(CurrentPlayerVehicle);
+        }
+
+        public static void LeavePersonalVehicle()
+        {
+            if (CurrentPlayerVehicle != null) CurrentPlayerVehicle.AttachedBlip.Alpha = 255;
+        }
+
+        public static void RemoveVehicleBlips(Vehicle vehicle)
+        {
+            if (vehicle == null) return;
+
+            if (vehicle.AttachedBlips.Length > 0)
+            {
+                foreach (Blip b in vehicle.AttachedBlips)
+                {
+                    b.Delete();
+                }
+            }
+        }
+
+        private static void SetPersonalVehicleBlip(Vehicle vehicle)
+        {
+            // Remove this vehicle blips
+            RemoveVehicleBlips(vehicle);
+
+            Helpers.Log("Setting up blip...");
+            Blip blip = vehicle.AddBlip();
+            VehicleClass vehicleClass = CurrentPlayerVehicle.ClassType;
+
+            blip.Sprite = BlipSprite.PersonalVehicleCar;
+
+            if (vehicleClass == VehicleClass.Boats) blip.Sprite = BlipSprite.Boat;
+            else if (vehicleClass == VehicleClass.Commercial) blip.Sprite = BlipSprite.GetawayCar;
+            else if (vehicleClass == VehicleClass.Compacts) blip.Sprite = BlipSprite.GetawayCar;
+            else if (vehicleClass == VehicleClass.Coupes) blip.Sprite = BlipSprite.GetawayCar;
+            else if (vehicleClass == VehicleClass.Cycles) blip.Sprite = BlipSprite.GangBike;
+            else if (vehicleClass == VehicleClass.Emergency) blip.Sprite = BlipSprite.GetawayCar;
+            else if (vehicleClass == VehicleClass.Helicopters) blip.Sprite = BlipSprite.Helicopter;
+            else if (vehicleClass == VehicleClass.Industrial) blip.Sprite = BlipSprite.Truck;
+            else if (vehicleClass == VehicleClass.Military) blip.Sprite = BlipSprite.Tank;
+            else if (vehicleClass == VehicleClass.Motorcycles) blip.Sprite = BlipSprite.GangBike;
+            else if (vehicleClass == VehicleClass.Muscle) blip.Sprite = BlipSprite.Deluxo;
+            else if (vehicleClass == VehicleClass.OffRoad) blip.Sprite = BlipSprite.GetawayCar;
+            else if (vehicleClass == VehicleClass.Planes) blip.Sprite = BlipSprite.Plane;
+            else if (vehicleClass == VehicleClass.Sedans) blip.Sprite = BlipSprite.GetawayCar;
+            else if (vehicleClass == VehicleClass.Service) blip.Sprite = BlipSprite.Cab;
+            else if (vehicleClass == VehicleClass.Sports) blip.Sprite = BlipSprite.SportsCar;
+            else if (vehicleClass == VehicleClass.SportsClassics) blip.Sprite = BlipSprite.GetawayCar;
+            else if (vehicleClass == VehicleClass.Super) blip.Sprite = BlipSprite.Stromberg;
+            else if (vehicleClass == VehicleClass.SUVs) blip.Sprite = BlipSprite.GetawayCar;
+            else if (vehicleClass == VehicleClass.Utility) blip.Sprite = BlipSprite.ArmoredTruck;
+            else if (vehicleClass == VehicleClass.Vans) blip.Sprite = BlipSprite.ArmoredTruck;
+
+            blip.Color = BlipColor.White;
+            blip.Name = "Last Vehicle";
+            blip.Scale = 1;
+
+            if (Game.Player.Character.IsInVehicle(vehicle)) blip.Alpha = 0;
+            else blip.Alpha = 255;
         }
 
         private static string LoadPlayerData()
@@ -283,22 +317,43 @@ namespace GTAVOverride.Managers
             return loaded;
         }
 
-        public static bool CanSave()
+        public static bool CanSave(bool checkLastSaveTime = true)
         {
             if (Main.configData.Auto_Save_Enabled && !Game.IsLoading && !Game.IsPaused)
             {
                 Ped ped = Game.Player.Character;
-                if (ped.IsDead ||
+
+                if (checkLastSaveTime && Game.GameTime < lastSave + saveDelay) return false;
+
+                if (!HasLoadedGame() ||
+                    ped.IsDead ||
                     Game.IsMissionActive ||
                     Game.IsCutsceneActive ||
                     ped.IsInAir ||
-                    ped.IsInFlyingVehicle ||
-                    ped.IsInHeli ||
                     ped.IsInParachuteFreeFall ||
-                    ped.IsInPlane ||
                     ped.IsInWater ||
-                    ped.IsFalling)
+                    ped.IsFalling ||
+                    Game.IsLoading ||
+                    Game.IsPaused ||
+                    Game.IsMissionActive ||
+                    !ped.IsAlive ||
+                    ped.IsRagdoll ||
+                    ped.IsSwimming ||
+                    ped.IsSwimmingUnderWater ||
+                    ped.IsInMeleeCombat ||
+                    ped.IsOnFire ||
+                    ped.Speed > 15f)
                     return false;
+
+                Vehicle current = Game.Player.Character.CurrentVehicle;
+                if (current != null && current.ClassType == VehicleClass.Planes && (current.HeightAboveGround > 5f || current.Speed > 2f))
+                    return false;
+
+                if (current != null && current.ClassType == VehicleClass.Helicopters && (current.HeightAboveGround > 5f || current.Speed > 2f))
+                    return false;
+
+                if (!Main.configData.Auto_Save_In_Vehicle && Game.Player.Character.IsSittingInVehicle()) return false;
+
                 return true;
             }
 
@@ -316,6 +371,8 @@ namespace GTAVOverride.Managers
         public static void Save()
         {
             if (!CanSave()) return;
+
+            lastSave = Game.GameTime;
 
             payerJson = new PlayerJson();
 
@@ -345,7 +402,18 @@ namespace GTAVOverride.Managers
                     playerJson.Spawn();
                 }
             }
+            else
+            {
+                Screen.FadeIn(500);
+
+                if (Main.configSettings.Info_Intro_Screen)
+                {
+                    IntroScreen intro = Script.InstantiateScript<IntroScreen>();
+                    intro.Start();
+                }
+            }
             loaded = true;
+            lastSave = Game.GameTime;
             Helpers.Log("Player loaded!");
         }
     }

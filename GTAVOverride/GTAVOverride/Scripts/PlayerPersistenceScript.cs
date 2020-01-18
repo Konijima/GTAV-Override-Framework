@@ -3,18 +3,15 @@ using System.Collections.Generic;
 using System.Text;
 using GTA;
 using GTA.UI;
+using GTA.Math;
 using GTA.Native;
 using GTAVOverride.Managers;
-using GTA.Math;
 
 namespace GTAVOverride.Scripts
 {
     [ScriptAttributes(NoDefaultInstance = true)]
     public class PlayerPersistenceScript : Script
     {
-        private int lastSave = 0;
-        private int saveDelay = 5000;
-
         private bool vehicleTrigger;
         private bool deathTrigger;
         private bool wantedTrigger;
@@ -29,9 +26,6 @@ namespace GTAVOverride.Scripts
             if (Function.Call<bool>(Hash.BUSYSPINNER_IS_DISPLAYING)) Function.Call(Hash.BUSYSPINNER_OFF);
 
             PlayerManager.SetSavePath(Main.configData.Save_Directory_Path, Main.configData.Save_Player_Filename);
-
-            saveDelay = Main.configData.Auto_Save_Delay;
-            if (saveDelay < 1000) saveDelay = 1000;
 
             Tick += PersistenceScript_Tick;
             Aborted += PlayerPersistenceScript_Aborted;
@@ -64,32 +58,6 @@ namespace GTAVOverride.Scripts
             Function.Call(Hash.BUSYSPINNER_OFF);
         }
 
-        private bool CanSave()
-        {
-            Player player = Game.Player;
-            Ped ped = Game.Player.Character;
-
-            if (PlayerManager.HasLoadedGame() &&
-                Main.configData.Auto_Save_Enabled &&
-                Game.GameTime > lastSave + saveDelay &&
-                !Game.IsLoading &&
-                !Game.IsPaused &&
-                !Game.IsMissionActive &&
-                ped.IsAlive &&
-                !ped.IsRagdoll &&
-                !ped.IsSwimming &&
-                !ped.IsSwimmingUnderWater &&
-                !ped.IsInMeleeCombat &&
-                !ped.IsOnFire &&
-                ped.Speed < 15f)
-            {
-                if (!Main.configData.Auto_Save_In_Vehicle && Game.Player.Character.IsSittingInVehicle()) return false;
-
-                return true;
-            }
-            return false;
-        }
-
         private void PersistenceScript_Tick(object sender, EventArgs e)
         {
             if (!_inited && !Game.IsLoading)
@@ -99,7 +67,6 @@ namespace GTAVOverride.Scripts
                 PlayerManager.Load();
 
                 lastMoney = Game.Player.Money;
-                lastSave = Game.GameTime;
             }
 
             if (_inited && PlayerManager.HasLoadedGame())
@@ -107,20 +74,21 @@ namespace GTAVOverride.Scripts
                 if (Game.Player.Character.IsDead && !deathTrigger) deathTrigger = true;
                 if (Game.Player.WantedLevel > 0 && !wantedTrigger) wantedTrigger = true;
                 
+                if (Main.configSettings.Debug_Mode)
+                {
+                    if (PlayerManager.CanSave(false)) Helpers.DrawText(new Vector2(0.015f, 0.08f), "Can auto-save");
+                }
+
                 if (Game.Player.Character.IsInVehicle() && !vehicleTrigger)
                 {
-                    PlayerManager.ReplacePersonalVehicle(Game.Player.Character.LastVehicle);
+                    PlayerManager.ReplacePersonalVehicle(Game.Player.Character.CurrentVehicle);
                     vehicleTrigger = true;
                 }
 
                 if (vehicleTrigger && !Game.Player.Character.IsInVehicle())
                 {
-                    PlayerManager.ReplacePersonalVehicle(Game.Player.Character.LastVehicle);
+                    PlayerManager.LeavePersonalVehicle();
                     vehicleTrigger = false;
-                }
-                else
-                {
-                    PlayerManager.ReplacePersonalVehicle(Game.Player.Character.CurrentVehicle);
                 }
 
                 if (Main.configData.Auto_Save_Enabled)
@@ -136,7 +104,6 @@ namespace GTAVOverride.Scripts
                             if (wantedTrigger)
                             {
                                 wantedTrigger = false;
-                                lastSave = Game.GameTime;
                                 PlayerManager.Save();
                                 Helpers.DebugSubtitle("Autosaving after loosing cops...", 1000);
                                 ShowSpinner("Autosaving");
@@ -150,7 +117,6 @@ namespace GTAVOverride.Scripts
                         if (Game.Player.Money != lastMoney)
                         {
                             lastMoney = Game.Player.Money;
-                            lastSave = Game.GameTime;
                             PlayerManager.Save();
                             Helpers.DebugSubtitle("Autosaving transaction...", 1000);
                             ShowSpinner("Autosaving");
@@ -163,7 +129,6 @@ namespace GTAVOverride.Scripts
                         if (!Game.Player.Character.IsDead && deathTrigger && Screen.IsFadedIn)
                         {
                             deathTrigger = false;
-                            lastSave = Game.GameTime;
                             PlayerManager.Save();
                             Helpers.DebugSubtitle("Autosaving after respawn...", 1000);
                             ShowSpinner("Autosaving");
@@ -171,9 +136,8 @@ namespace GTAVOverride.Scripts
                     }
 
                     // auto-save with delay
-                    if (CanSave() && !deathTrigger)
+                    if (PlayerManager.CanSave() && !deathTrigger)
                     {
-                        lastSave = Game.GameTime;
                         PlayerManager.Save();
                         Helpers.DebugSubtitle("Autosaving...", 1000);
                         ShowSpinner("Autosaving");
