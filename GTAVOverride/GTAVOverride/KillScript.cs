@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using GTA;
 using GTA.UI;
 using GTA.Native;
@@ -9,21 +10,28 @@ namespace GTAVOverride
     {
         private bool _started;
         private bool _completed;
+        private List<string> _excludedScripts;
 
         public KillScript()
         {
             _started = false;
             _completed = false;
+            _excludedScripts = new List<string>();
         }
 
-        public bool isStarted
+        public bool Started
         {
             get { return _started; }
         }
 
-        public bool isCompleted
+        public bool Completed
         {
             get { return _completed; }
+        }
+
+        public void ExcludeScriptName(string scriptname)
+        {
+            _excludedScripts.Add(scriptname);
         }
 
         public void DontRun()
@@ -39,23 +47,25 @@ namespace GTAVOverride
 
             if (!Game.IsLoading && Game.Player.Character != null)
             {
-                Helpers.Log("Killscript starting...");
+                Debug.Log("Killscript starting...");
 
                 if (Game.IsCutsceneActive)
                 {
                     Function.Call(Hash.STOP_CUTSCENE_IMMEDIATELY);
-                    Helpers.Log("Killscript has stopped active cutscene.");
+                    Debug.Log("Killscript has stopped active cutscene.");
                 }
                 else
                 {
                     Function.Call(Hash.DESTROY_MOBILE_PHONE);
-                    Helpers.Log("Killscript has destroyed active phone if one was active.");
+                    Debug.Log("Killscript has destroyed active phone if one was active.");
                 }
 
                 // kill
                 int killCount = 0;
-                foreach (String script in GTAV_Scripts)
+                foreach (string script in GTAV_Scripts)
                 {
+                    if (_excludedScripts.Contains(script)) return;
+
                     int scriptHash = Game.GenerateHash(script);
                     if (Function.Call<bool>(Hash.DOES_SCRIPT_WITH_NAME_HASH_EXIST, scriptHash))
                     {
@@ -69,27 +79,30 @@ namespace GTAVOverride
                     }
 
                 }
-                Helpers.Log("Killscript killed (" + killCount + ") GTAV Scripts.");
+                Debug.Log("Killscript killed (" + killCount + ") GTAV Scripts.");
 
                 if (Game.IsMissionActive)
                 {
                     Game.IsMissionActive = false;
-                    Helpers.Log("Killscript stopped active mission.");
+                    Debug.Log("Killscript stopped active mission.");
                 }
+
                 if (!Game.Player.CanControlCharacter)
                 {
                     Game.Player.CanControlCharacter = true;
-                    Helpers.Log("Killscript give control to player character.");
+                    Debug.Log("Killscript give control to player character.");
                 }
+
                 if (!Hud.IsRadarVisible)
                 {
                     Hud.IsRadarVisible = true;
-                    Helpers.Log("Killscript enabled Radar.");
+                    Debug.Log("Killscript enabled Radar.");
                 }
+
                 if (!Hud.IsVisible)
                 {
                     Hud.IsVisible = true;
-                    Helpers.Log("Killscript enabled HUD.");
+                    Debug.Log("Killscript enabled HUD.");
                 }
 
                 if (Main.configSettings.Kill_GTAV_Scripts_Only)
@@ -97,7 +110,7 @@ namespace GTAVOverride
                     Screen.FadeIn(500);
                 }
 
-                Helpers.Log("Killscript has completed!");
+                Debug.Log("Killscript has completed!");
 
                 _completed = true;
             }

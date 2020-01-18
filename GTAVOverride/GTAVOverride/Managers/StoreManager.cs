@@ -1,50 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using GTA;
+﻿using System.Collections.Generic;
 using GTA.Math;
-using GTA.Native;
+using GTAVOverride.Classes;
 
 namespace GTAVOverride.Managers
 {
-    public class Store
-    {
-        public Vector3 position;
-        public float heading;
-        public Blip blip;
-
-        public Store(Vector3 position, float heading)
-        {
-            this.position = position;
-            this.heading = heading;
-
-            blip = World.CreateBlip(position);
-            blip.Sprite = BlipSprite.Store;
-            blip.Color = BlipColor.White;
-            blip.IsShortRange = true;
-
-            Function.Call(Hash.BEGIN_TEXT_COMMAND_SET_BLIP_NAME, "STRING");
-            Function.Call(Hash.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME, "Store");
-            Function.Call(Hash.END_TEXT_COMMAND_SET_BLIP_NAME, blip.Handle);
-        }
-
-        public void Show()
-        {
-            blip.Alpha = 255;
-        }
-
-        public void Hide(int alpha = 0)
-        {
-            blip.Alpha = alpha;
-        }
-    }
-
     public static class StoreManager
     {
         public static List<Store> Stores = new List<Store>();
 
         public static void CreateStores()
         {
-            Helpers.Log("Creating all Stores...");
+            Debug.Log("Creating all Stores...");
 
             CreateStore(new Vector3(27.52871f, -1345.263f, 29.49702f), 91.18019f);
             CreateStore(new Vector3(1162.928f, -323.5625f, 69.20512f), 287.8695f);
@@ -58,6 +24,8 @@ namespace GTAVOverride.Managers
         {
             Store store = new Store(position, heading);
 
+            store.CreateBlip();
+
             Stores.Add(store);
 
             return store;
@@ -67,9 +35,9 @@ namespace GTAVOverride.Managers
         {
             foreach (Store store in Stores)
             {
-                store.blip.Delete();
+                store.DeleteBlip();
             }
-            Helpers.Log("Deleting all Stores blips...");
+            Debug.Log("Deleting all Stores blips...");
         }
 
         public static void ShowStoreBlips()
@@ -78,7 +46,7 @@ namespace GTAVOverride.Managers
             {
                 store.Show();
             }
-            Helpers.Log("Show all Stores blips...");
+            Debug.Log("Show all Stores blips...");
         }
 
         public static void HideStoreBlips(int alpha = 0)
@@ -87,7 +55,7 @@ namespace GTAVOverride.Managers
             {
                 store.Hide(alpha);
             }
-            Helpers.Log("Hide all Stores blips...");
+            Debug.Log("Hide all Stores blips...");
         }
     }
 }

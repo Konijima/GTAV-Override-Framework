@@ -1,16 +1,10 @@
 ﻿using System;
 using GTA;
 using GTA.Native;
+using GTAVOverride.Enums;
 
 namespace GTAVOverride.Managers
 {
-    public enum ClockMode
-    {
-        Sync = 0,
-        Virtual,
-        Vanilla,
-    }
-
     public static class DateTimeManager
     {
         private static bool _dirty = false;
@@ -101,19 +95,22 @@ namespace GTAVOverride.Managers
 
         public static void UpdateGameClock()
         {
-            if (Main.configSettings.Debug_Mode)
-            {
-                Helpers.DrawText(new GTA.Math.Vector2(0.015f, 0.01f), "Clock: " + CurrentDate.ToString());
-                Helpers.DrawText(new GTA.Math.Vector2(0.015f, 0.03f), "Mode : " + clockMode.ToString());
-                if (clockMode == ClockMode.Virtual) Helpers.DrawText(new GTA.Math.Vector2(0.015f, 0.05f), "Timerate : " + timerate.ToString());
-            }
-
             if (_dirty)
             {
                 Function.Call(Hash.PAUSE_CLOCK, frozen);
                 Function.Call(Hash.SET_CLOCK_DATE, date.Day, date.Month, date.Year);
                 Function.Call(Hash.SET_CLOCK_TIME, date.Hour, date.Minute, date.Second);
                 _dirty = false;
+            }
+        }
+
+        public static void Debug()
+        {
+            if (Main.configSettings.Debug_Mode)
+            {
+                Helpers.DrawText(new GTA.Math.Vector2(0.015f, 0.01f), "Clock: " + CurrentDate.ToString());
+                Helpers.DrawText(new GTA.Math.Vector2(0.015f, 0.03f), "Mode : " + clockMode.ToString());
+                if (clockMode == ClockMode.Virtual) Helpers.DrawText(new GTA.Math.Vector2(0.015f, 0.05f), "Timerate : " + timerate.ToString());
             }
         }
     }

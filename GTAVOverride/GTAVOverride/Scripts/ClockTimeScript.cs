@@ -1,6 +1,6 @@
 ﻿using System;
 using GTA;
-using GTA.Native;
+using GTAVOverride.Enums;
 using GTAVOverride.Managers;
 
 namespace GTAVOverride.Scripts
@@ -23,16 +23,19 @@ namespace GTAVOverride.Scripts
         {
             if (Game.IsPaused || Game.IsLoading) return;
 
+            // Sync with machine
             if (DateTimeManager.CurrentClockMode == ClockMode.Sync)
             {
                 DateTimeManager.Freeze(true);
                 DateTimeManager.SetDate(DateTime.Now);
                 DateTimeManager.SetTime(DateTime.Now.TimeOfDay);
             }
+            // Vanilla game time
             else if (DateTimeManager.CurrentClockMode == ClockMode.Vanilla)
             {
                 DateTimeManager.Freeze(false);
             }
+            // Virtual game time
             else
             {
                 DateTimeManager.Freeze(true);
@@ -44,6 +47,7 @@ namespace GTAVOverride.Scripts
                 }
             }
 
+            // Update Clock
             DateTimeManager.UpdateGameClock();
         }
     }

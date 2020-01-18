@@ -1,5 +1,5 @@
 ﻿using GTA;
-using GTAVOverride.Managers;
+using GTAVOverride.Enums;
 
 namespace GTAVOverride.Configs
 {

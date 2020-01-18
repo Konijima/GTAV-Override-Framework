@@ -3,20 +3,10 @@ using System.Collections.Generic;
 using GTA;
 using GTA.Math;
 using GTA.Native;
+using GTAVOverride.Enums;
 
 namespace GTAVOverride.Managers
 {
-public enum PoliceStationIds
-{
-    Vespucci = 0,
-    Davis = 1,
-    RockfordHills = 2,
-    SandyShores = 3,
-    PaletoBay = 4,
-    Vinewood = 5,
-    MissionRow = 6,
-}
-
     public static class PoliceStationManager
     {
         public static List<Blip> PoliceStationBlips = new List<Blip>();
@@ -24,9 +14,8 @@ public enum PoliceStationIds
 
         public static void CreateDefaultPoliceStationBlips()
         {
-            Helpers.Log("Creating all Police Stations...");
+            Debug.Log("Creating all Police Stations...");
             
-
             CreatePoliceStationBlip(new Vector3(-1092.9016113281f, -808.55224609375f, 0f)); // Vespucci Police Station
             CreatePoliceStationBlip(new Vector3(363.5834f, -1587.378f, 0f)); // Davis Police Station
             CreatePoliceStationBlip(new Vector3(-561.56872558594f, -131.63426208496f, 0f)); // Rockford Hills Police Station
@@ -108,7 +97,7 @@ public enum PoliceStationIds
             {
                 EnablePoliceStation(H);
             }
-            Helpers.Log("Enabling all Police Station spawns...");
+            Debug.Log("Enabling all Police Station spawns...");
         }
 
         public static void DisableAllPoliceStations()
@@ -117,7 +106,7 @@ public enum PoliceStationIds
             {
                 DisablePoliceStation(H);
             }
-            Helpers.Log("Disabling all Police Station spawns...");
+            Debug.Log("Disabling all Police Station spawns...");
         }
 
         public static void EnableAllCustomPoliceStations()
@@ -126,7 +115,7 @@ public enum PoliceStationIds
             {
                 EnablePoliceStation(H);
             }
-            Helpers.Log("Enabling all custom Police Station spawns...");
+            Debug.Log("Enabling all custom Police Station spawns...");
         }
 
         public static void DisableAllCustomPoliceStations()
@@ -135,7 +124,7 @@ public enum PoliceStationIds
             {
                 DisablePoliceStation(H);
             }
-            Helpers.Log("Disabling all custom Police Station spawns...");
+            Debug.Log("Disabling all custom Police Station spawns...");
         }
     }
 }

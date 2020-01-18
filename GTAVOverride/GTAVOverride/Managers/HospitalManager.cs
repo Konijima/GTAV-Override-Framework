@@ -3,18 +3,10 @@ using System.Collections.Generic;
 using GTA;
 using GTA.Math;
 using GTA.Native;
+using GTAVOverride.Enums;
 
 namespace GTAVOverride.Managers
-{
-    public enum HospitalIds
-    {
-        MountZonah = 0,
-        CentralLosSantos = 1,
-        PillboxHill = 2,
-        SandyShores = 3,
-        PaletoBay = 4,
-    }
-
+{ 
     public static class HospitalManager
     {
         public static List<Blip> HospitalBlips = new List<Blip>();
@@ -22,13 +14,13 @@ namespace GTAVOverride.Managers
 
         public static void CreateDefaultHospitalBlips()
         {
-            Helpers.Log("Creating all Hospitals...");
+            Debug.Log("Creating all Hospitals...");
 
-            CreateHospitalBlip(new GTA.Math.Vector3(-474.2133f, -336.6607f, 0f)); // MountZonah
-            CreateHospitalBlip(new GTA.Math.Vector3(344.8595f, -1415.773f, 0f)); // CentralLosSantos
-            CreateHospitalBlip(new GTA.Math.Vector3(356.6836f, -586.7533f, 0f)); // PillboxHill
-            CreateHospitalBlip(new GTA.Math.Vector3(1838.11f, 3680.505f, 0f)); // SandyShores
-            CreateHospitalBlip(new GTA.Math.Vector3(-252.493f, 6322.25f, 0f)); // PaletoBay
+            CreateHospitalBlip(new Vector3(-474.2133f, -336.6607f, 0f)); // MountZonah
+            CreateHospitalBlip(new Vector3(344.8595f, -1415.773f, 0f)); // CentralLosSantos
+            CreateHospitalBlip(new Vector3(356.6836f, -586.7533f, 0f)); // PillboxHill
+            CreateHospitalBlip(new Vector3(1838.11f, 3680.505f, 0f)); // SandyShores
+            CreateHospitalBlip(new Vector3(-252.493f, 6322.25f, 0f)); // PaletoBay
         }
 
         public static Blip CreateHospitalBlip(Vector3 position)
@@ -49,7 +41,7 @@ namespace GTAVOverride.Managers
             {
                 blip.Delete();
             }
-            Helpers.Log("Delete all Hospitals...");
+            Debug.Log("Delete all Hospitals...");
         }
 
         public static void ShowHospitalBlips()
@@ -58,7 +50,7 @@ namespace GTAVOverride.Managers
             {
                 blip.Alpha = 255;
             }
-            Helpers.Log("Show all Hospital blips");
+            Debug.Log("Show all Hospital blips");
         }
 
         public static void HideHospitalBlips()
@@ -67,7 +59,7 @@ namespace GTAVOverride.Managers
             {
                 blip.Alpha = 0;
             }
-            Helpers.Log("Hide all Hospital blips");
+            Debug.Log("Hide all Hospital blips");
         }
 
         public static void EnableHospital(int hospitalId)
@@ -105,7 +97,7 @@ namespace GTAVOverride.Managers
             {
                 EnableHospital(H);
             }
-            Helpers.Log("Enabling all Hospital respawns...");
+            Debug.Log("Enabling all Hospital respawns...");
         }
 
         public static void DisableAllHospitals()
@@ -114,7 +106,7 @@ namespace GTAVOverride.Managers
             {
                 DisableHospital(H);
             }
-            Helpers.Log("Disabling all Hospital respawns...");
+            Debug.Log("Disabling all Hospital respawns...");
         }
 
         public static void EnableAllCustomHospitals()
@@ -123,7 +115,7 @@ namespace GTAVOverride.Managers
             {
                 EnableHospital(H);
             }
-            Helpers.Log("Enabling all custom Hospital respawns...");
+            Debug.Log("Enabling all custom Hospital respawns...");
         }
 
         public static void DisableAllCustomHospitals()
@@ -132,7 +124,7 @@ namespace GTAVOverride.Managers
             {
                 DisableHospital(H);
             }
-            Helpers.Log("Disabling all custom Hospital respawns...");
+            Debug.Log("Disabling all custom Hospital respawns...");
         }
     }
 }

@@ -105,7 +105,7 @@ namespace GTAVOverride.Scripts
                             {
                                 wantedTrigger = false;
                                 PlayerManager.Save();
-                                Helpers.DebugSubtitle("Autosaving after loosing cops...", 1000);
+                                Debug.Subtitle("Autosaving after loosing cops...", 1000);
                                 ShowSpinner("Autosaving");
                             }
                         }
@@ -118,7 +118,7 @@ namespace GTAVOverride.Scripts
                         {
                             lastMoney = Game.Player.Money;
                             PlayerManager.Save();
-                            Helpers.DebugSubtitle("Autosaving transaction...", 1000);
+                            Debug.Subtitle("Autosaving transaction...", 1000);
                             ShowSpinner("Autosaving");
                         }
                     }
@@ -130,7 +130,7 @@ namespace GTAVOverride.Scripts
                         {
                             deathTrigger = false;
                             PlayerManager.Save();
-                            Helpers.DebugSubtitle("Autosaving after respawn...", 1000);
+                            Debug.Subtitle("Autosaving after respawn...", 1000);
                             ShowSpinner("Autosaving");
                         }
                     }
@@ -139,7 +139,7 @@ namespace GTAVOverride.Scripts
                     if (PlayerManager.CanSave() && !deathTrigger)
                     {
                         PlayerManager.Save();
-                        Helpers.DebugSubtitle("Autosaving...", 1000);
+                        Debug.Subtitle("Autosaving...", 1000);
                         ShowSpinner("Autosaving");
                     }
                 }

@@ -10,6 +10,7 @@ namespace GTAVOverride.Configs
         private ScriptSettings _settings;
 
         private bool _Debug_Mode = false;
+        private bool _Dont_Generate_Log = false;
         private int _Kill_GTAV_Scripts_Ms_Delay = 0;
         private bool _Kill_GTAV_Scripts_Only = false;
         private bool _Dont_Kill_GTAV_Scripts = false;
@@ -34,6 +35,7 @@ namespace GTAVOverride.Configs
         public void Save()
         {
             Debug_Mode = _Debug_Mode;
+            Dont_Generate_Log = _Dont_Generate_Log;
             Kill_GTAV_Scripts_Ms_Delay = _Kill_GTAV_Scripts_Ms_Delay;
             Kill_GTAV_Scripts_Only = _Kill_GTAV_Scripts_Only;
             Dont_Kill_GTAV_Scripts = _Dont_Kill_GTAV_Scripts;
@@ -52,6 +54,7 @@ namespace GTAVOverride.Configs
         public void Load()
         {
             _Debug_Mode = _settings.GetValue(_section, "Debug_Mode", _Debug_Mode);
+            _Dont_Generate_Log = _settings.GetValue(_section, "Dont_Generate_Log", _Dont_Generate_Log);
             _Kill_GTAV_Scripts_Ms_Delay = _settings.GetValue(_section, "Kill_GTAV_Scripts_Ms_Delay", _Kill_GTAV_Scripts_Ms_Delay);
             _Kill_GTAV_Scripts_Only = _settings.GetValue(_section, "Kill_GTAV_Scripts_Only", _Kill_GTAV_Scripts_Only);
             _Dont_Kill_GTAV_Scripts = _settings.GetValue(_section, "Dont_Kill_GTAV_Scripts", _Dont_Kill_GTAV_Scripts);
@@ -75,6 +78,19 @@ namespace GTAVOverride.Configs
             {
                 _Debug_Mode = value;
                 _settings.SetValue<bool>(_section, "Debug_Mode", _Debug_Mode);
+            }
+        }
+
+        public bool Dont_Generate_Log
+        {
+            get
+            {
+                return _Dont_Generate_Log;
+            }
+            set
+            {
+                _Dont_Generate_Log = value;
+                _settings.SetValue<bool>(_section, "Dont_Generate_Log", _Dont_Generate_Log);
             }
         }
 

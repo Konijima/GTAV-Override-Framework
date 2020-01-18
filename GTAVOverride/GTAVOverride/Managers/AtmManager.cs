@@ -1,78 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using GTA;
-using GTA.UI;
+﻿using System.Collections.Generic;
 using GTA.Math;
-using GTA.Native;
+using GTAVOverride.Classes;
 
 namespace GTAVOverride.Managers
 {
-    public class ATM
-    {
-        public Vector3 position;
-        public float heading;
-        public Blip blip;
-
-        private int holding;
-        private bool broken;
-        private int nextRespawn;
-
-        public ATM(Vector3 position, float heading)
-        {
-            this.position = position;
-            this.heading = heading;
-
-            Random random = new Random();
-
-            holding = random.Next(200, 2000);
-            broken = false;
-            nextRespawn = 0;
-
-            blip = World.CreateBlip(position);
-            blip.Sprite = BlipSprite.CashPickup;
-            blip.Color = BlipColor.Green;
-            blip.IsShortRange = true;
-            blip.Scale = 0.6f;
-
-            Function.Call(Hash.BEGIN_TEXT_COMMAND_SET_BLIP_NAME, "STRING");
-            Function.Call(Hash.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME, "ATM");
-            Function.Call(Hash.END_TEXT_COMMAND_SET_BLIP_NAME, blip.Handle);
-        }
-
-        public void SpawnMoney()
-        {
-            Random random = new Random();
-
-            int amount = 1;
-            if (holding > 500) amount = 2;
-            else if (holding > 1000) amount = 3;
-            else if (holding > 1500) amount = 4;
-            else if (holding > 2000) amount = 5;
-            else if (holding > 2500) amount = 8;
-
-            int value = holding / amount;
-
-            Function.Call(Hash.CREATE_MONEY_PICKUPS, position.X, position.Y, position.Z, value, amount, 0);
-        }
-
-        public void Break()
-        {
-            if (!broken)
-            {
-                broken = true;
-                nextRespawn = Game.GameTime + 10000;
-                SpawnMoney();
-            }
-        }
-    }
-
     public static class AtmManager
     {
         public static List<ATM> Atms = new List<ATM>();
 
         public static void CreateATMs()
         {
-            Helpers.Log("Creating ATMs...");
+            Debug.Log("Creating ATMs...");
+
             CreateATM(new Vector3(-1109.797f, -1690.808f, 4.375014f), 122.9616f);
             CreateATM(new Vector3(-821.6062f, -1081.885f, 11.13243f), 29.3056f);
             CreateATM(new Vector3(-537.8409f, -854.5145f, 29.28953f), 182.9156f);
@@ -147,6 +86,8 @@ namespace GTAVOverride.Managers
         {
             ATM atm = new ATM(position, heading);
 
+            atm.CreateBlip();
+
             Atms.Add(atm);
 
             return atm;
@@ -156,9 +97,9 @@ namespace GTAVOverride.Managers
         {
             foreach (ATM atm in Atms)
             {
-                atm.blip.Delete();
+                atm.DeleteBlip();
             }
-            Helpers.Log("Delete all ATM blips!");
+            Debug.Log("Delete all ATM blips!");
         }
 
         public static void ShowATMBlips()
@@ -167,7 +108,7 @@ namespace GTAVOverride.Managers
             {
                 atm.blip.Alpha = 255;
             }
-            Helpers.Log("Show all ATM blips!");
+            Debug.Log("Show all ATM blips!");
         }
 
         public static void HideATMBlips()
@@ -176,12 +117,7 @@ namespace GTAVOverride.Managers
             {
                 atm.blip.Alpha = 0;
             }
-            Helpers.Log("Hide all ATM blips!");
-        }
-
-        public static void BreakATM(ATM atm)
-        {
-            
+            Debug.Log("Hide all ATM blips!");
         }
     }
 }

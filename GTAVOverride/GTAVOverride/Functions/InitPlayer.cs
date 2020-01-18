@@ -3,6 +3,7 @@ using GTA;
 using GTA.UI;
 using GTA.Math;
 using GTA.Native;
+using GTAVOverride.Data;
 using GTAVOverride.Managers;
 
 namespace GTAVOverride.Functions
@@ -22,7 +23,7 @@ namespace GTAVOverride.Functions
                 model.Request();
                 Wait(1);
             }
-            Helpers.Log("Vehicle model has loaded!");
+            Debug.Log("Vehicle model has loaded!");
 
             vehicle = World.CreateVehicle(model, new Vector3(vehicleJson.X, vehicleJson.Y, vehicleJson.Z), vehicleJson.Heading);
             vehicle.HealthFloat = vehicleJson.Health;
@@ -46,14 +47,14 @@ namespace GTAVOverride.Functions
             vehicle.Mods.DashboardColor = vehicleJson.DashboardColor;
             vehicle.Mods.TireSmokeColor = vehicleJson.TireSmokeColor;
 
-            Helpers.Log("Vehicle spawned!");
+            Debug.Log("Vehicle spawned!");
 
             while (!model.IsCollisionLoaded)
             {
                 model.RequestCollision();
                 Wait(1);
             }
-            Helpers.Log("Vehicle collision has loaded!");
+            Debug.Log("Vehicle collision has loaded!");
 
             model.MarkAsNoLongerNeeded();
         }
@@ -83,7 +84,7 @@ namespace GTAVOverride.Functions
 
             Tick += InitPlayer_Tick;
 
-            Helpers.Log("Starting init player...");
+            Debug.Log("Starting init player...");
         }
 
         private void InitPlayer_Tick(object sender, EventArgs e)
@@ -91,17 +92,17 @@ namespace GTAVOverride.Functions
             // step 1
             if (Game.Player.Character.Model.Hash != playerJson.Hash)
             {
-                Helpers.Log("Player model need to be changed!");
+                Debug.Log("Player model need to be changed!");
 
                 Model model = new Model(playerJson.Hash);
                 model.Request();
                 while (!model.IsLoaded) Wait(1);
-                Helpers.Log("Player model has loaded!");
+                Debug.Log("Player model has loaded!");
 
                 Game.Player.ChangeModel(model);
-                Helpers.Log("Player model has been changed!");
+                Debug.Log("Player model has been changed!");
             }
-            else Helpers.Log("Player model did not need to change!");
+            else Debug.Log("Player model did not need to change!");
 
             // current player car right now
             Vehicle currentVehicle = Game.Player.Character.CurrentVehicle;
@@ -145,7 +146,7 @@ namespace GTAVOverride.Functions
             }
 
             // end
-            Helpers.Log("Player init completed!");
+            Debug.Log("Player init completed!");
 
             OnCompleted(new EventArgs());
 

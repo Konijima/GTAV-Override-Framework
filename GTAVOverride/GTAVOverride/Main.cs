@@ -17,21 +17,21 @@ namespace GTAVOverride
         public static ConfigBlips configBlips;
         public static ConfigClock configClock;
 
-        private KillScript _killScript;
-        private List<Script> _scripts;
+        private readonly KillScript _killScript;
+        private readonly List<Script> _scripts;
 
         public Main()
         {
-            Helpers.StartLog();
-            Helpers.Log("Mod is initializing...");
-
             configData = new ConfigData(Settings);
             configSettings = new ConfigSettings(Settings);
             configScripts = new ConfigScripts(Settings);
             configBlips = new ConfigBlips(Settings);
             configClock = new ConfigClock(Settings);
 
-            Helpers.Log("Mod is preparing killscript...");
+            Debug.InitLog();
+            Debug.Log("Mod is initializing...");
+
+            Debug.Log("Mod is preparing killscript...");
             _killScript = new KillScript();
 
             Function.Call(Hash.CLEAR_ALL_HELP_MESSAGES);
@@ -48,14 +48,14 @@ namespace GTAVOverride
             if (configScripts.Play_Police_Script) _scripts.Add(InstantiateScript<PlayPoliceScript>());
             if (configScripts.Waypoint_Tools_Script) _scripts.Add(InstantiateScript<WaypointToolsScript>());
 
-            Helpers.Log("Mod is starting update tick...");
+            Debug.Log("Mod is starting update tick...");
             Tick += Main_Tick;
             Aborted += Main_Aborted;
         }
 
         private void Main_Tick(object sender, EventArgs e)
         {
-            if (!Game.IsLoading && !_killScript.isStarted && !_killScript.isCompleted)
+            if (!Game.IsLoading && !_killScript.Started && !_killScript.Completed)
             {
                 if (Screen.IsFadedIn)
                 {
@@ -65,14 +65,14 @@ namespace GTAVOverride
 
                 if (!configSettings.Dont_Kill_GTAV_Scripts)
                 {
-                    Helpers.Log("Waiting " + configSettings.Kill_GTAV_Scripts_Ms_Delay + "ms to start killscript...");
+                    Debug.Log("Waiting " + configSettings.Kill_GTAV_Scripts_Ms_Delay + "ms to start killscript...");
                     Wait(configSettings.Kill_GTAV_Scripts_Ms_Delay);
 
                     _killScript.Run();
 
                     if (configSettings.Kill_GTAV_Scripts_Only)
                     {
-                        Helpers.Log("Kill Scripts only is enabled, not continuing mod initialization...");
+                        Debug.Log("Kill Scripts only is enabled, not continuing mod initialization...");
                         Abort();
                     }
                 }
@@ -80,9 +80,9 @@ namespace GTAVOverride
 
                 Initialize();
             }
-            else if (Game.IsLoading && _killScript.isCompleted)
+            else if (Game.IsLoading && _killScript.Completed)
             {
-                Helpers.Log("Mod stopped due to loading screen re-openned!");
+                Debug.Log("Mod stopped due to loading screen re-openned!");
                 Abort();
                 return;
             }
@@ -90,10 +90,10 @@ namespace GTAVOverride
 
         private void Main_Aborted(object sender, EventArgs e)
         {
-            Helpers.Log("Mod is aborting...");
+            Debug.Log("Mod is aborting...");
 
             if (!configSettings.Dont_Kill_GTAV_Scripts)
-                ClearAllBlips();
+                Helpers.ClearAllBlips();
             else
             {
                 AtmManager.DeleteATMBlips();
@@ -103,7 +103,8 @@ namespace GTAVOverride
                 AmmunationManager.DeleteAmmunationBlips();
             }
 
-            Helpers.EndLog();
+            Debug.EndLog();
+            Debug.DestroyDebugger();
         }
 
         private void Initialize()
@@ -112,13 +113,12 @@ namespace GTAVOverride
             StartScripts();
             DebugInit();
 
-            Helpers.Log("Mod has initialized!");
+            Debug.Log("Mod has initialized!");
         }
 
         private void InitializeManagers()
         {
-            Helpers.Log("Initializing managers...");
-
+            Debug.Log("Initializing managers...");
 
             DateTimeManager.SetMode(configClock.Clock_Mode);
 
@@ -147,26 +147,19 @@ namespace GTAVOverride
 
         private void DebugInit()
         {
+            Debug.CreateDebugger();
+
             if (configSettings.Debug_Mode)
             {
-                Game.MaxWantedLevel = 5;
-                Game.Player.WantedLevel = 0;
-                Game.Player.IsInvincible = false;
-                Game.Player.Character.IsInvincible = Game.Player.IsInvincible;
-                Game.Player.Character.Weapons.Give(WeaponHash.Bat, 1, true, false);
-                Game.Player.Character.Weapons.Give(WeaponHash.Grenade, 500, true, true);
-                Game.Player.Character.Weapons.Give(WeaponHash.Pistol, 500, true, true);
-                Game.Player.Character.Weapons.Give(WeaponHash.AssaultRifle, 500, true, true);
-                Game.Player.Character.Weapons.Give(WeaponHash.DoubleBarrelShotgun, 500, true, true);
+                Debug.SetPlayerDebugKit();
 
-                Helpers.Log("Debug mode activated!");
+                Debug.Log("Debug mode activated!");
             }
-            Game.Player.Character.Weapons.Give(WeaponHash.Pistol, 500, true, true);
         }
 
         private void StartScripts()
         {
-            Helpers.Log("Starting scripts...");
+            Debug.Log("Starting scripts...");
             int startedCount = 0;
             foreach (Script script in _scripts)
             {
@@ -176,12 +169,12 @@ namespace GTAVOverride
                     startedCount++;
                 }
             }
-            Helpers.Log("Started (" + startedCount + ") mod script(s).");
+            Debug.Log("Started (" + startedCount + ") mod script(s).");
         }
 
         private void StopScripts()
         {
-            Helpers.Log("Stopping scripts...");
+            Debug.Log("Stopping scripts...");
             int stoppedCount = 0;
             foreach (Script script in _scripts)
             {
@@ -191,18 +184,7 @@ namespace GTAVOverride
                     stoppedCount++;
                 }
             }
-            Helpers.Log("Stopped (" + stoppedCount + ") mod script(s).");
-        }
-
-        private void ClearAllBlips()
-        {
-            Helpers.Log("Clearing all blips...");
-
-            Blip[] blips = World.GetAllBlips();
-            foreach (Blip blip in blips)
-            {
-                blip.Delete();
-            }
+            Debug.Log("Stopped (" + stoppedCount + ") mod script(s).");
         }
     }
 }

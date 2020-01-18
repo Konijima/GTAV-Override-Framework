@@ -1,21 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using GTA;
-using GTA.UI;
-using GTA.Math;
-using GTA.Native;
 using GTAVOverride.Managers;
+using GTAVOverride.Classes;
 
 namespace GTAVOverride.Scripts
 {
     [ScriptAttributes(NoDefaultInstance = true)]
     public class StoreScript : Script
     {
-        private Store _nearbyStore;
-        private int _updateNearestTimer = 0;
+        private Store _inRangeStore;
 
         public StoreScript()
         {
+            Interval = 1000;
+
             Tick += StoreScript_Tick;
         }
 
@@ -23,27 +21,27 @@ namespace GTAVOverride.Scripts
         {
             Pause();
 
-            if (_nearbyStore != null)
+            // player is in store range
+            if (_inRangeStore != null)
             {
-                if (Game.Player.Character.Position.DistanceTo(_nearbyStore.position) > 8f)
+                // is player leaving store range
+                if (Game.Player.Character.Position.DistanceTo(_inRangeStore.position) > _inRangeStore.range)
                 {
-                    _nearbyStore.Show();
-                    _nearbyStore = null;
+                    _inRangeStore.Show();
+                    _inRangeStore = null;
                 }
             }
+            // player is not in range of any store
             else
             {
-                if (Game.GameTime > _updateNearestTimer + 1000)
+                foreach (Store store in StoreManager.Stores)
                 {
-                    _updateNearestTimer = Game.GameTime;
-                    foreach (Store store in StoreManager.Stores)
+                    // is player in range of this store
+                    if (Game.Player.Character.Position.DistanceTo(store.position) < store.range)
                     {
-                        if (Game.Player.Character.Position.DistanceTo(store.position) < 8f)
-                        {
-                            _nearbyStore = store;
-                            _nearbyStore.Hide(50);
-                            break;
-                        }
+                        _inRangeStore = store;
+                        _inRangeStore.Hide(50);
+                        break;
                     }
                 }
             }

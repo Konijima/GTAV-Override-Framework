@@ -81,5 +81,13 @@ namespace GTAVOverride.Scripts
         {
             _forced = timescale;
         }
+
+        public void Debug()
+        {
+            if (Main.configSettings.Debug_Mode)
+            {
+                Helpers.DrawText(new GTA.Math.Vector2(0.015f, 0.01f), "Timescale: " + current.ToString());
+            }
+        }
     }
 }

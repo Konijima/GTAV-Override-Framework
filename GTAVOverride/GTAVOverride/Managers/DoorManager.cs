@@ -1,56 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using GTA;
-using GTA.UI;
+﻿using System.Collections.Generic;
 using GTA.Math;
-using GTA.Native;
+using GTAVOverride.Classes;
 
 namespace GTAVOverride.Managers
 {
-    public class Door
-    {
-        public string id;
-        public string name;
-        public int hash;
-        public Vector3 position;
-
-        public Door(string id, string name, int hash, Vector3 position)
-        {
-            this.id = id;
-            this.name = name;
-            this.hash = hash;
-            this.position = position;
-        }
-
-        public void Open()
-        {
-            
-        }
-
-        public void Close()
-        {
-            
-        }
-
-        public void Unlock()
-        {
-            Function.Call(Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, Game.GenerateHash(name), position.X, position.Y, position.Z, false, 1f, 0);
-        }
-
-        public void Lock()
-        {
-            Function.Call(Hash.SET_STATE_OF_CLOSEST_DOOR_OF_TYPE, Game.GenerateHash(name), position.X, position.Y, position.Z, true, 0f, 0);
-        }
-    }
-
     public static class DoorManager
     {
         public static List<Door> doors = new List<Door>();
 
         public static void CreateDoors()
         {
-            Helpers.Log("Creating Doors...");
+            Debug.Log("Creating Doors...");
 
             doors.Add(new Door("Prologue", "v_ilev_cd_door", 1438783233, new Vector3(5307.52f, -5204.539f, 83.6686f)));
             doors.Add(new Door("Prologue", "v_ilev_cd_door", 1017370378, new Vector3(5310.12f, -5204.54f, 83.67f)));
@@ -98,7 +58,7 @@ namespace GTAVOverride.Managers
             {
                 door.Open();
             }
-            Helpers.Log("Opening all Doors...");
+            Debug.Log("Opening all Doors...");
         }
 
         public static void CloseAll()
@@ -107,7 +67,7 @@ namespace GTAVOverride.Managers
             {
                 door.Close();
             }
-            Helpers.Log("Closing all Doors...");
+            Debug.Log("Closing all Doors...");
         }
 
         public static void UnlockAll()
@@ -116,7 +76,7 @@ namespace GTAVOverride.Managers
             {
                 door.Unlock();
             }
-            Helpers.Log("Unlocking all Doors...");
+            Debug.Log("Unlocking all Doors...");
         }
 
         public static void LockAll()
@@ -125,7 +85,7 @@ namespace GTAVOverride.Managers
             {
                 door.Lock();
             }
-            Helpers.Log("Locking all Doors...");
+            Debug.Log("Locking all Doors...");
         }
     }
 }
