@@ -1,5 +1,7 @@
 ﻿using System;
 using GTA;
+using GTA.Math;
+using GTA.UI;
 using GTAVOverride.Enums;
 using GTAVOverride.Managers;
 
@@ -9,6 +11,7 @@ namespace GTAVOverride.Scripts
     public class ClockTimeScript : Script
     {
         private int _timer = 0;
+        private float _clockScroll = 0;
 
         public ClockTimeScript()
         {
@@ -22,6 +25,28 @@ namespace GTAVOverride.Scripts
         private void ClockScripts_Tick(object sender, EventArgs e)
         {
             if (Game.IsPaused || Game.IsLoading) return;
+
+            string time = DateTimeManager.GetTimeString();
+            if (Game.Player.CanControlCharacter && Game.IsControlPressed(Control.CharacterWheel))
+            {
+                Hud.IsRadarVisible = true;
+                _clockScroll += 1 * Game.LastFrameTime;
+                if (_clockScroll > 0.02f) _clockScroll = 0.02f;
+            }
+            else
+            {
+                _clockScroll -= 1 * Game.LastFrameTime;
+                if (_clockScroll < -0.2f)
+                {
+                    _clockScroll = -0.2f;
+                    Hud.IsRadarVisible = false;
+                }
+            }
+            if (Hud.IsRadarVisible)
+            {
+                Helpers.DrawText(new Vector2(0.5f, _clockScroll), time, true, true, 1.068f, 0, 0, 0, 200, Font.ChaletComprimeCologne);
+                Helpers.DrawText(new Vector2(0.5f, _clockScroll), time, true, true, 1.066f, 240, 240, 240, 255, Font.ChaletComprimeCologne);
+            }
 
             // Sync with machine
             if (DateTimeManager.CurrentClockMode == ClockMode.Sync)

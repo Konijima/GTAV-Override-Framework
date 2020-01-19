@@ -17,8 +17,8 @@ namespace GTAVOverride
         public static ConfigBlips configBlips;
         public static ConfigClock configClock;
 
-        private readonly KillScript _killScript;
-        private readonly List<Script> _scripts;
+        private readonly KillScript _killScript = new KillScript();
+        private readonly List<Script> _scripts = new List<Script>();
 
         public Main()
         {
@@ -31,15 +31,10 @@ namespace GTAVOverride
             Debug.InitLog();
             Debug.Log("Mod is initializing...");
 
-            Debug.Log("Mod is preparing killscript...");
-            _killScript = new KillScript();
-
-            Function.Call(Hash.CLEAR_ALL_HELP_MESSAGES);
-
-            _scripts = new List<Script>();
             if (configScripts.Atm_Script) _scripts.Add(InstantiateScript<AtmScript>());
             if (configScripts.ClockTime_Script) _scripts.Add(InstantiateScript<ClockTimeScript>());
             if (configScripts.Economy_Script) _scripts.Add(InstantiateScript<EconomyScript>());
+            if (configScripts.People_Money_Script) _scripts.Add(InstantiateScript<PeopleMoneyScript>());
             if (configScripts.Player_Death_Arrest_Script) _scripts.Add(InstantiateScript<PlayerDeathArrestScript>());
             if (configScripts.Player_Persistence_Script) _scripts.Add(InstantiateScript<PlayerPersistenceScript>());
             if (configScripts.Rob_People_Script && !configScripts.Play_Police_Script) _scripts.Add(InstantiateScript<RobPeopleScript>());

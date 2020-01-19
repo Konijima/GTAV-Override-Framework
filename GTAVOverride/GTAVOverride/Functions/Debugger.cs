@@ -7,6 +7,9 @@ namespace GTAVOverride.Functions
     [ScriptAttributes(NoDefaultInstance = true)]
     public class Debugger : Script
     {
+        private int currentFps = 0;
+        private int fpsUpdateTimer = 0;
+
         public void Create()
         {
             if (!Main.configSettings.Debug_Mode) return;
@@ -21,6 +24,13 @@ namespace GTAVOverride.Functions
 
             DateTimeManager.Debug();
 
+            if (Game.GameTime > fpsUpdateTimer)
+            {
+                currentFps = Convert.ToInt32(Game.FPS);
+                fpsUpdateTimer = Game.GameTime + 100;
+            }
+
+            Debug.DrawText(new GTA.Math.Vector2(0.49f, 0.03f), "FPS: " + currentFps.ToString("0"));
         }
 
         public void Destroy()

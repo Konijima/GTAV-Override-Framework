@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using GTA;
 using GTA.UI;
 using GTAVOverride.Data;
@@ -112,7 +113,14 @@ namespace GTAVOverride.Managers
         private static void SavePlayerData(string json)
         {
             Debug.Log("Saving player " + playerFileName + " data at " + saveFilePath + playerFileName);
-            File.WriteAllText(Path.Combine(saveFilePath, playerFileName), json);
+            try
+            {
+                File.WriteAllText(Path.Combine(saveFilePath, playerFileName), json);
+            }
+            catch(Exception ex)
+            {
+                Debug.Log("Error saving player data : " + ex.Message);
+            }
         }
 
         public static bool HasSaveGame()
@@ -134,20 +142,15 @@ namespace GTAVOverride.Managers
                 if (checkLastSaveTime && Game.GameTime < lastSave + saveDelay) return false;
 
                 if (!HasLoadedGame() ||
-                    ped.IsDead ||
                     Game.IsMissionActive ||
                     Game.IsCutsceneActive ||
+                    ped.IsDead ||
                     ped.IsInAir ||
                     ped.IsInParachuteFreeFall ||
                     ped.IsInWater ||
                     ped.IsFalling ||
-                    Game.IsLoading ||
-                    Game.IsPaused ||
-                    Game.IsMissionActive ||
                     !ped.IsAlive ||
                     ped.IsRagdoll ||
-                    ped.IsSwimming ||
-                    ped.IsSwimmingUnderWater ||
                     ped.IsInMeleeCombat ||
                     ped.IsOnFire ||
                     ped.Speed > 15f)
@@ -219,7 +222,14 @@ namespace GTAVOverride.Managers
                     IntroScreen intro = Script.InstantiateScript<IntroScreen>();
                     intro.Start();
                 }
+
+                Game.Player.Money = 0;
+                Game.Player.WantedLevel = 0;
+                Game.Player.Character.Weapons.RemoveAll();
+
+                Notification.Show(NotificationIcon.Multiplayer, "GTAVOverride", "Mod has initialized!", "Mod has initialized a new savegame file, your progress will be saved from now on.", true, true);
             }
+
             loaded = true;
             lastSave = Game.GameTime;
             Debug.Log("Player loaded!");

@@ -13,6 +13,7 @@ namespace GTAVOverride.Configs
         private bool _TimeScale_Script = true;
         private bool _Economy_Script = true;
         private bool _Rob_People_Script = true;
+        private bool _People_Money_Script = true;
         private bool _Atm_Script = true;
         private bool _Store_Script = true;
         private bool _Play_Police_Script = false;
@@ -35,6 +36,7 @@ namespace GTAVOverride.Configs
             TimeScale_Script = _TimeScale_Script;
             Economy_Script = _Economy_Script;
             Rob_People_Script = _Rob_People_Script;
+            People_Money_Script = _People_Money_Script;
             Atm_Script = _Atm_Script;
             Store_Script = _Store_Script;
             //Play_Police_Script = _Play_Police_Script;
@@ -51,6 +53,7 @@ namespace GTAVOverride.Configs
             _TimeScale_Script = _settings.GetValue<bool>(_section, "TimeScale_Script", _TimeScale_Script);
             _Economy_Script = _settings.GetValue<bool>(_section, "Economy_Script", _Economy_Script);
             _Rob_People_Script = _settings.GetValue<bool>(_section, "Rob_People_Script", _Rob_People_Script);
+            _People_Money_Script = _settings.GetValue<bool>(_section, "People_Money_Script", _People_Money_Script);
             _Atm_Script = _settings.GetValue<bool>(_section, "Atm_Script", _Atm_Script);
             _Store_Script = _settings.GetValue<bool>(_section, "Store_Script", _Store_Script);
             _Play_Police_Script = _settings.GetValue<bool>(_section, "Play_Police_Script", _Play_Police_Script);
@@ -132,6 +135,19 @@ namespace GTAVOverride.Configs
             {
                 _Rob_People_Script = value;
                 _settings.SetValue<bool>(_section, "Rob_People_Script", _Rob_People_Script);
+            }
+        }
+
+        public bool People_Money_Script
+        {
+            get
+            {
+                return _People_Money_Script;
+            }
+            set
+            {
+                _People_Money_Script = value;
+                _settings.SetValue<bool>(_section, "People_Money_Script", _People_Money_Script);
             }
         }
 

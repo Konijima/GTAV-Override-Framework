@@ -81,14 +81,14 @@ namespace GTAVOverride
         {
             if (!Main.configSettings.Debug_Mode) return;
 
-            Helpers.DrawText(position, text, false, true, 0.35f, 255, 255, 255, 255, Font.Monospace);
+            Helpers.DrawText(position, text, false, true, 0.35f, 255, 255, 255, 255, Font.ChaletLondon);
         }
 
         public static void DrawText3D(Vector3 coords, Vector3 offset, string text)
         {
             if (!Main.configSettings.Debug_Mode) return;
 
-            Helpers.DrawText3D(coords, offset, text, true, false, 0.35f, 255, 255, 255, 255, Font.Monospace);
+            Helpers.DrawText3D(coords, offset, text, true, false, 0.35f, 255, 255, 255, 255, Font.ChaletLondon);
         }
 
         public static void Subtitle(string text, int delay = 1000)

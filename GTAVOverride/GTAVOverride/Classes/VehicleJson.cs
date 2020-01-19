@@ -23,6 +23,8 @@ namespace GTAVOverride.Data
         public bool IsSirenActive { get; set; }
         public bool IsEngineRunning { get; set; }
         public bool IsInteriorLightOn { get; set; }
+        public bool AreLightsOn { get; set; }
+        public VehicleLockStatus LockStatus { get; set; }
         public VehicleColor PrimaryColor { get; set; }
         public VehicleColor SecondaryColor { get; set; }
         public VehicleColor RimColor { get; set; }
@@ -32,8 +34,6 @@ namespace GTAVOverride.Data
         public int Livery { get; set; }
         public string LicensePlate { get; set; }
         public string RadioStation { get; set; }
-        public VehicleLockStatus LockStatus { get; set; }
-
 
         public void SetVehicle(Vehicle vehicle)
         {
@@ -54,6 +54,7 @@ namespace GTAVOverride.Data
             IsSirenActive = _vehicle.IsSirenActive;
             IsEngineRunning = _vehicle.IsEngineRunning;
             IsInteriorLightOn = _vehicle.IsInteriorLightOn;
+            AreLightsOn = _vehicle.AreLightsOn;
             LockStatus = _vehicle.LockStatus;
 
             PrimaryColor = _vehicle.Mods.PrimaryColor;

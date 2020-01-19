@@ -34,8 +34,8 @@ namespace GTAVOverride.Functions
             vehicle.IsSirenActive = vehicleJson.IsSirenActive;
             vehicle.IsEngineRunning = true;
             vehicle.IsInteriorLightOn = vehicleJson.IsInteriorLightOn;
+            vehicle.AreLightsOn = vehicleJson.AreLightsOn;
             vehicle.LockStatus = vehicleJson.LockStatus;
-
             vehicle.Mods.PrimaryColor = vehicleJson.PrimaryColor;
             vehicle.Mods.SecondaryColor = vehicleJson.SecondaryColor;
             vehicle.Mods.ColorCombination = vehicleJson.ColorCombination;
@@ -89,18 +89,23 @@ namespace GTAVOverride.Functions
 
         private void InitPlayer_Tick(object sender, EventArgs e)
         {
+            bool test = false;
+
             // step 1
-            if (Game.Player.Character.Model.Hash != playerJson.Hash)
+            if (test || Game.Player.Character.Model.Hash != playerJson.Hash)
             {
                 Debug.Log("Player model need to be changed!");
 
                 Model model = new Model(playerJson.Hash);
+                if (test) model = new Model(PedHash.Michael);
                 model.Request();
                 while (!model.IsLoaded) Wait(1);
                 Debug.Log("Player model has loaded!");
 
                 Game.Player.ChangeModel(model);
                 Debug.Log("Player model has been changed!");
+
+                if (test) Debug.SetPlayerDebugKit();
             }
             else Debug.Log("Player model did not need to change!");
 

@@ -18,10 +18,14 @@ namespace GTAVOverride.Configs
         private int _Info_Intro_Screen_Ms_Duration = 4000;
         private bool _Unlock_All_Doors = true;
         private bool _Hospital_Spawn_OnDeath = true;
+        private int _Hospital_Fee = 500;
         private bool _PoliceStation_Spawn_OnArrest = true;
+        private int _PoliceStation_Fee = 500;
         private bool _Quick_Rob_People_No_Pickup = false;
         private bool _Randomize_People_Money = true;
-        private int _Randomize_People_MaxMoney = 100;
+        private int _Randomize_Poor_People_MaxMoney = 30;
+        private int _Randomize_Regular_People_MaxMoney = 100;
+        private int _Randomize_Rich_People_MaxMoney = 300;
 
         public ConfigSettings(ScriptSettings settings)
         {
@@ -43,10 +47,14 @@ namespace GTAVOverride.Configs
             Info_Intro_Screen_Ms_Duration = _Info_Intro_Screen_Ms_Duration;
             Unlock_All_Doors = _Unlock_All_Doors;
             Hospital_Spawn_OnDeath = _Hospital_Spawn_OnDeath;
+            Hospital_Fee = _Hospital_Fee;
             PoliceStation_Spawn_OnArrest = _PoliceStation_Spawn_OnArrest;
+            PoliceStation_Fee = _PoliceStation_Fee;
             Quick_Rob_People_No_Pickup = _Quick_Rob_People_No_Pickup;
             Randomize_People_Money = _Randomize_People_Money;
-            Randomize_People_MaxMoney = _Randomize_People_MaxMoney;
+            Randomize_Poor_People_MaxMoney = _Randomize_Poor_People_MaxMoney;
+            Randomize_Regular_People_MaxMoney = _Randomize_Regular_People_MaxMoney;
+            Randomize_Rich_People_MaxMoney = _Randomize_Rich_People_MaxMoney;
 
             _settings.Save();
         }
@@ -62,10 +70,14 @@ namespace GTAVOverride.Configs
             _Info_Intro_Screen_Ms_Duration = _settings.GetValue(_section, "Info_Intro_Screen_Ms_Duration", _Info_Intro_Screen_Ms_Duration);
             _Unlock_All_Doors = _settings.GetValue(_section, "Unlock_All_Doors", _Unlock_All_Doors);
             _Hospital_Spawn_OnDeath = _settings.GetValue(_section, "Hospital_Spawn_OnDeath", _Hospital_Spawn_OnDeath);
+            _Hospital_Fee = _settings.GetValue(_section, "Hospital_Fee", _Hospital_Fee);
             _PoliceStation_Spawn_OnArrest = _settings.GetValue(_section, "PoliceStation_Spawn_OnArrest", _PoliceStation_Spawn_OnArrest);
+            _PoliceStation_Fee = _settings.GetValue(_section, "PoliceStation_Fee", _PoliceStation_Fee);
             _Quick_Rob_People_No_Pickup = _settings.GetValue(_section, "Quick_Rob_People_No_Pickup", _Quick_Rob_People_No_Pickup);
             _Randomize_People_Money = _settings.GetValue(_section, "Randomize_People_Money", _Randomize_People_Money);
-            _Randomize_People_MaxMoney = _settings.GetValue(_section, "Randomize_People_MaxMoney", _Randomize_People_MaxMoney);
+            _Randomize_Poor_People_MaxMoney = _settings.GetValue(_section, "Randomize_Poor_People_MaxMoney", _Randomize_Poor_People_MaxMoney);
+            _Randomize_Regular_People_MaxMoney = _settings.GetValue(_section, "Randomize_Regular_People_MaxMoney", _Randomize_Regular_People_MaxMoney);
+            _Randomize_Rich_People_MaxMoney = _settings.GetValue(_section, "Randomize_Rich_People_MaxMoney", _Randomize_Rich_People_MaxMoney);
         }
 
         public bool Debug_Mode
@@ -186,6 +198,19 @@ namespace GTAVOverride.Configs
             }
         }
 
+        public int Hospital_Fee
+        {
+            get
+            {
+                return _Hospital_Fee;
+            }
+            set
+            {
+                _Hospital_Fee = value;
+                _settings.SetValue(_section, "Hospital_Fee", _Hospital_Fee);
+            }
+        }
+
         public bool PoliceStation_Spawn_OnArrest
         {
             get
@@ -196,6 +221,19 @@ namespace GTAVOverride.Configs
             {
                 _PoliceStation_Spawn_OnArrest = value;
                 _settings.SetValue<bool>(_section, "PoliceStation_Spawn_OnArrest", _PoliceStation_Spawn_OnArrest);
+            }
+        }
+
+        public int PoliceStation_Fee
+        {
+            get
+            {
+                return _PoliceStation_Fee;
+            }
+            set
+            {
+                _PoliceStation_Fee = value;
+                _settings.SetValue(_section, "PoliceStation_Fee", _PoliceStation_Fee);
             }
         }
 
@@ -225,16 +263,42 @@ namespace GTAVOverride.Configs
             }
         }
 
-        public int Randomize_People_MaxMoney
+        public int Randomize_Poor_People_MaxMoney
         {
             get
             {
-                return _Randomize_People_MaxMoney;
+                return _Randomize_Poor_People_MaxMoney;
             }
             set
             {
-                _Randomize_People_MaxMoney = value;
-                _settings.SetValue<int>(_section, "Randomize_People_MaxMoney", _Randomize_People_MaxMoney);
+                _Randomize_Poor_People_MaxMoney = value;
+                _settings.SetValue<int>(_section, "Randomize_Poor_People_MaxMoney", _Randomize_Poor_People_MaxMoney);
+            }
+        }
+
+        public int Randomize_Regular_People_MaxMoney
+        {
+            get
+            {
+                return _Randomize_Regular_People_MaxMoney;
+            }
+            set
+            {
+                _Randomize_Regular_People_MaxMoney = value;
+                _settings.SetValue<int>(_section, "Randomize_Regular_People_MaxMoney", _Randomize_Regular_People_MaxMoney);
+            }
+        }
+
+        public int Randomize_Rich_People_MaxMoney
+        {
+            get
+            {
+                return _Randomize_Rich_People_MaxMoney;
+            }
+            set
+            {
+                _Randomize_Rich_People_MaxMoney = value;
+                _settings.SetValue<int>(_section, "Randomize_Rich_People_MaxMoney", _Randomize_Rich_People_MaxMoney);
             }
         }
     }

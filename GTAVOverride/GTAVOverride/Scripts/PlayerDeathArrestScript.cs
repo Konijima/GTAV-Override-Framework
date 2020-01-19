@@ -45,11 +45,21 @@ namespace GTAVOverride.Scripts
             {
                 if (deathTriggered)
                 {
+                    if (Main.configSettings.Hospital_Fee > 0)
+                    {
+                        Game.Player.Money -= Main.configSettings.Hospital_Fee;
+                        if (Game.Player.Money < 0) Game.Player.Money = 0;
+                    }
                     deathTriggered = false;
                     Screen.StopEffects();
                 }
                 if (arrestTriggered)
                 {
+                    if (Main.configSettings.PoliceStation_Fee > 0)
+                    {
+                        Game.Player.Money -= Main.configSettings.PoliceStation_Fee;
+                        if (Game.Player.Money < 0) Game.Player.Money = 0;
+                    }
                     arrestTriggered = false;
                     Screen.StopEffects();
                 }

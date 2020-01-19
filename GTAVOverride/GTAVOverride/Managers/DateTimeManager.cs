@@ -49,6 +49,33 @@ namespace GTAVOverride.Managers
             }
         }
 
+        public static string GetTimeString()
+        {
+            string hours = CurrentTime.Hours.ToString();
+            string minutes = CurrentTime.Minutes.ToString();
+            string seconds = CurrentTime.Seconds.ToString();
+
+            // 12 hours clock
+            if (!Main.configClock.Military_Time_Format)
+            {
+                if (CurrentTime.Hours > 12) hours = (CurrentTime.Hours - 12).ToString();
+            }
+
+            // add zeroes
+            if (CurrentTime.Minutes < 10) minutes = "0" + minutes;
+            if (CurrentTime.Seconds < 10) seconds = "0" + seconds;
+
+            string time = hours + ":" + minutes;
+
+            // add seconds to time string
+            if (Main.configClock.Show_Seconds) time += ":" + seconds;
+
+            // add AM PM
+            if (!Main.configClock.Military_Time_Format) time += " " + CurrentDate.ToString("tt");
+
+            return time;
+        }
+
         public static bool Frozen
         {
             get
