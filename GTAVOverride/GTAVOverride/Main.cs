@@ -30,7 +30,7 @@ namespace GTAVOverride
 
             Debug.InitLog();
             Debug.Log("Mod is initializing...");
-
+            
             if (configScripts.Atm_Script) _scripts.Add(InstantiateScript<AtmScript>());
             if (configScripts.ClockTime_Script) _scripts.Add(InstantiateScript<ClockTimeScript>());
             if (configScripts.Economy_Script) _scripts.Add(InstantiateScript<EconomyScript>());
@@ -80,6 +80,11 @@ namespace GTAVOverride
                 Debug.Log("Mod stopped due to loading screen re-openned!");
                 Abort();
                 return;
+            }
+
+            if (!Game.IsLoading && Screen.IsFadedOut)
+            {
+                if (!configScripts.Player_Persistence_Script) Screen.FadeIn(1);
             }
         }
 

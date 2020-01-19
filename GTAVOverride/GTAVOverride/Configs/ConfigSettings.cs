@@ -21,6 +21,7 @@ namespace GTAVOverride.Configs
         private int _Hospital_Fee = 500;
         private bool _PoliceStation_Spawn_OnArrest = true;
         private int _PoliceStation_Fee = 500;
+        private bool _Show_Hud_OnKeyDown = true;
         private bool _Quick_Rob_People_No_Pickup = false;
         private bool _Randomize_People_Money = true;
         private int _Randomize_Poor_People_MaxMoney = 30;
@@ -50,6 +51,7 @@ namespace GTAVOverride.Configs
             Hospital_Fee = _Hospital_Fee;
             PoliceStation_Spawn_OnArrest = _PoliceStation_Spawn_OnArrest;
             PoliceStation_Fee = _PoliceStation_Fee;
+            Show_Hud_OnKeyDown = _Show_Hud_OnKeyDown;
             Quick_Rob_People_No_Pickup = _Quick_Rob_People_No_Pickup;
             Randomize_People_Money = _Randomize_People_Money;
             Randomize_Poor_People_MaxMoney = _Randomize_Poor_People_MaxMoney;
@@ -73,6 +75,7 @@ namespace GTAVOverride.Configs
             _Hospital_Fee = _settings.GetValue(_section, "Hospital_Fee", _Hospital_Fee);
             _PoliceStation_Spawn_OnArrest = _settings.GetValue(_section, "PoliceStation_Spawn_OnArrest", _PoliceStation_Spawn_OnArrest);
             _PoliceStation_Fee = _settings.GetValue(_section, "PoliceStation_Fee", _PoliceStation_Fee);
+            _Show_Hud_OnKeyDown = _settings.GetValue(_section, "Show_Hud_OnKeyDown", _Show_Hud_OnKeyDown);
             _Quick_Rob_People_No_Pickup = _settings.GetValue(_section, "Quick_Rob_People_No_Pickup", _Quick_Rob_People_No_Pickup);
             _Randomize_People_Money = _settings.GetValue(_section, "Randomize_People_Money", _Randomize_People_Money);
             _Randomize_Poor_People_MaxMoney = _settings.GetValue(_section, "Randomize_Poor_People_MaxMoney", _Randomize_Poor_People_MaxMoney);
@@ -234,6 +237,19 @@ namespace GTAVOverride.Configs
             {
                 _PoliceStation_Fee = value;
                 _settings.SetValue(_section, "PoliceStation_Fee", _PoliceStation_Fee);
+            }
+        }
+
+        public bool Show_Hud_OnKeyDown
+        {
+            get
+            {
+                return _Show_Hud_OnKeyDown;
+            }
+            set
+            {
+                _Show_Hud_OnKeyDown = value;
+                _settings.SetValue(_section, "Show_Hud_OnKeyDown", _Show_Hud_OnKeyDown);
             }
         }
 

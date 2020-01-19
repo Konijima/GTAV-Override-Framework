@@ -22,7 +22,9 @@ namespace GTAVOverride.Functions
         private void Debugger_Tick(object sender, EventArgs e)
         {
 
-            DateTimeManager.Debug();
+            DateTimeManager.DebugThisFrame();
+
+            TimeScaleManager.DebugThisFrame();
 
             if (Game.GameTime > fpsUpdateTimer)
             {

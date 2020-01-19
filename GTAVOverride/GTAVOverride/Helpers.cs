@@ -47,6 +47,13 @@ namespace GTAVOverride
             Function.Call(Hash.DRAW_RECT, x, y, width, height, r, g, b, a);
         }
 
+        public static void ShowHelpMessageThisFrame(string text, bool beep = true)
+        {
+            Function.Call(Hash.BEGIN_TEXT_COMMAND_DISPLAY_HELP, "STRING");
+            Function.Call(Hash.ADD_TEXT_COMPONENT_SUBSTRING_PLAYER_NAME, text);
+            Function.Call(Hash.END_TEXT_COMMAND_DISPLAY_HELP, 0, 0, beep, -1);
+        }
+
         public static string GetAreaName(Vector3 position)
         {
             int locationHash = Function.Call<int>(Hash.GET_HASH_OF_MAP_AREA_AT_COORDS, position.X, position.Y, position.Z);
@@ -99,6 +106,7 @@ namespace GTAVOverride
             if (!playerPed.IsAlive ||
                 !playerPed.IsAiming ||
                 playerPed.IsRagdoll ||
+                Game.Player.WantedLevel > 1 ||
                 Game.Player.Character.IsInMeleeCombat ||
                 !CanRobPedWithThisWeapon(playerPed.Weapons.Current) ||
                 (!playerPed.IsOnFoot && !playerPed.IsOnBike))

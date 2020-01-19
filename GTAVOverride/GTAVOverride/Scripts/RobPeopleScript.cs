@@ -35,24 +35,29 @@ namespace GTAVOverride.Scripts
                     Game.DisableControlThisFrame(Control.WeaponSpecial2);
                     Game.DisableControlThisFrame(Control.VehicleHorn);
                     Game.DisableControlThisFrame(Control.Talk);
-                }
-
-                Entity entity = Game.Player.TargetedEntity;
-                if (entity != null && entity.Model.IsPed)
-                {
-                    Ped ped = (Ped)entity;
-
-                    if (ped != null)
+                
+                    Entity entity = Game.Player.TargetedEntity;
+                    if (entity != null && entity.Model.IsPed)
                     {
-                        if (CanPedBeRobbed(ped))
-                        {
-                            ThreathenPed(ped);
-                        }
+                        Ped ped = (Ped)entity;
 
-                        if (!Game.IsControlEnabled(Control.Talk) && Game.IsControlJustPressed(Control.Talk))
+                        if (ped != null)
                         {
-                            Helpers.PedSpeakThreathen(Game.Player.Character);
+                            if (CanPedBeRobbed(ped))
+                            {
+                                ThreathenPed(ped);
+                            }
+
+                            if (!Game.IsControlEnabled(Control.Talk) && Game.IsControlJustPressed(Control.Talk))
+                            {
+                                Helpers.PedSpeakThreathen(Game.Player.Character);
+                            }
                         }
+                    }
+                    else
+                    {
+                        if (Function.Call<bool>(Hash.IS_HELP_MESSAGE_BEING_DISPLAYED))
+                            Function.Call(Hash.CLEAR_ALL_HELP_MESSAGES);
                     }
                 }
             }
@@ -121,10 +126,11 @@ namespace GTAVOverride.Scripts
             {
                 if (Game.IsControlJustPressed(Control.Talk))
                 {
+                    Interval = 0;
                     threathen = true;
                     Function.Call(Hash.CLEAR_ALL_HELP_MESSAGES);
                 }
-                else Screen.ShowHelpTextThisFrame("Press ~INPUT_TALK~ to threathen.");
+                else Helpers.ShowHelpMessageThisFrame("Press ~INPUT_TALK~ to threathen.", false);
             }
             else threathen = true;
 

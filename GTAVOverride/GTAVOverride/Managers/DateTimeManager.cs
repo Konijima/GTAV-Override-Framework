@@ -131,7 +131,7 @@ namespace GTAVOverride.Managers
             }
         }
 
-        public static void Debug()
+        public static void DebugThisFrame()
         {
             if (Main.configSettings.Debug_Mode)
             {

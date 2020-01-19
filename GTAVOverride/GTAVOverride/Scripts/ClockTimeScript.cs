@@ -29,7 +29,7 @@ namespace GTAVOverride.Scripts
             string time = DateTimeManager.GetTimeString();
             if (Game.Player.CanControlCharacter && Game.IsControlPressed(Control.CharacterWheel))
             {
-                Hud.IsRadarVisible = true;
+                if (Main.configSettings.Show_Hud_OnKeyDown) Hud.IsRadarVisible = true;
                 _clockScroll += 1 * Game.LastFrameTime;
                 if (_clockScroll > 0.02f) _clockScroll = 0.02f;
             }
@@ -39,10 +39,15 @@ namespace GTAVOverride.Scripts
                 if (_clockScroll < -0.2f)
                 {
                     _clockScroll = -0.2f;
-                    Hud.IsRadarVisible = false;
+                    if (Main.configSettings.Show_Hud_OnKeyDown) Hud.IsRadarVisible = false;
                 }
             }
-            if (Hud.IsRadarVisible)
+            if (Main.configSettings.Show_Hud_OnKeyDown && Hud.IsRadarVisible)
+            {
+                Helpers.DrawText(new Vector2(0.5f, _clockScroll), time, true, true, 1.068f, 0, 0, 0, 200, Font.ChaletComprimeCologne);
+                Helpers.DrawText(new Vector2(0.5f, _clockScroll), time, true, true, 1.066f, 240, 240, 240, 255, Font.ChaletComprimeCologne);
+            }
+            else
             {
                 Helpers.DrawText(new Vector2(0.5f, _clockScroll), time, true, true, 1.068f, 0, 0, 0, 200, Font.ChaletComprimeCologne);
                 Helpers.DrawText(new Vector2(0.5f, _clockScroll), time, true, true, 1.066f, 240, 240, 240, 255, Font.ChaletComprimeCologne);

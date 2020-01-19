@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using GTA;
 using GTA.UI;
 using GTA.Native;
+using GTAVOverride.Managers;
 
 namespace GTAVOverride.Scripts
 {
@@ -20,8 +19,7 @@ namespace GTAVOverride.Scripts
         {
             Pause();
 
-            Interval = 128;
-
+            Interval = 333;
             dead = false;
             deathTriggered = false;
             arrested = false;
@@ -43,8 +41,10 @@ namespace GTAVOverride.Scripts
 
             if (!dead && !arrested)
             {
+                // player is back from death
                 if (deathTriggered)
                 {
+                    TimeScaleManager.Target = 1f;
                     if (Main.configSettings.Hospital_Fee > 0)
                     {
                         Game.Player.Money -= Main.configSettings.Hospital_Fee;
@@ -53,8 +53,11 @@ namespace GTAVOverride.Scripts
                     deathTriggered = false;
                     Screen.StopEffects();
                 }
+
+                // player is back from arrest
                 if (arrestTriggered)
                 {
+                    TimeScaleManager.Target = 1f;
                     if (Main.configSettings.PoliceStation_Fee > 0)
                     {
                         Game.Player.Money -= Main.configSettings.PoliceStation_Fee;
@@ -65,10 +68,12 @@ namespace GTAVOverride.Scripts
                 }
             }
 
+            // player just died
             if (dead && !deathTriggered)
             {
                 TriggerDeath();
             }
+            // player just got arrested
             else if (arrested && !arrestTriggered)
             {
                 TriggerArrest();
@@ -78,6 +83,7 @@ namespace GTAVOverride.Scripts
         private void TriggerDeath()
         {
             deathTriggered = true;
+            TimeScaleManager.Target = 0.3f;
             Audio.PlaySoundFrontend("Bed", "WastedSounds");
             World.RenderingCamera.Shake(CameraShake.DeathFail, 1f);
             Screen.StartEffect(ScreenEffect.DeathFailMpDark, 0, false);
@@ -86,6 +92,7 @@ namespace GTAVOverride.Scripts
         private void TriggerArrest()
         {
             arrestTriggered = true;
+            TimeScaleManager.Target = 0.3f;
             Audio.PlaySoundFrontend("Bed", "WastedSounds");
             World.RenderingCamera.Shake(CameraShake.DeathFail, 1f);
             Screen.StartEffect(ScreenEffect.DontTazemeBro, 0, false);
