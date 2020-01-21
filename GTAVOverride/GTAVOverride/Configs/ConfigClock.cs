@@ -6,11 +6,12 @@ namespace GTAVOverride.Configs
     public class ConfigClock
     {
         private readonly string _section;
-        private ScriptSettings _settings;
+        private readonly ScriptSettings _settings;
 
-        private float _Virtual_Timerate = 0.5f;
+        private float _Virtual_Timerate = 0.25f;
+        private bool _Enable_Top_Clock= true;
         private bool _Show_Seconds = false;
-        private bool _Military_Time_Format = true;
+        private bool _Military_Time_Format = false;
         private ClockMode _Clock_Mode = ClockMode.Virtual;
 
         public ConfigClock(ScriptSettings settings)
@@ -25,6 +26,7 @@ namespace GTAVOverride.Configs
         public void Save()
         {
             Virtual_Timerate = _Virtual_Timerate;
+            Enable_Top_Clock = _Enable_Top_Clock;
             Show_Seconds = _Show_Seconds;
             Military_Time_Format = _Military_Time_Format;
             Clock_Mode = _Clock_Mode;
@@ -35,6 +37,7 @@ namespace GTAVOverride.Configs
         public void Load()
         {
             _Virtual_Timerate = _settings.GetValue(_section, "Virtual_Timerate", _Virtual_Timerate);
+            _Enable_Top_Clock = _settings.GetValue(_section, "Enable_Top_Clock", _Enable_Top_Clock);
             _Show_Seconds = _settings.GetValue(_section, "Show_Seconds", _Show_Seconds);
             _Military_Time_Format = _settings.GetValue(_section, "Military_Time_Format", _Military_Time_Format);
             _Clock_Mode = _settings.GetValue(_section, "Clock_Mode", _Clock_Mode);
@@ -50,6 +53,20 @@ namespace GTAVOverride.Configs
             {
                 _Virtual_Timerate = value;
                 _settings.SetValue(_section, "Virtual_Timerate", _Virtual_Timerate);
+                _settings.Save();
+            }
+        }
+
+        public bool Enable_Top_Clock
+        {
+            get
+            {
+                return _Enable_Top_Clock;
+            }
+            set
+            {
+                _Enable_Top_Clock = value;
+                _settings.SetValue(_section, "Enable_Top_Clock", _Enable_Top_Clock);
                 _settings.Save();
             }
         }

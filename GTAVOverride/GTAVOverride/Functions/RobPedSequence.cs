@@ -51,7 +51,7 @@ namespace GTAVOverride.Functions
         {
             if (targetPed.Money <= 0) return;
 
-            if (Main.configSettings.Quick_Rob_People_No_Pickup)
+            if (Main.configRobPeople.Quick_Rob_People_No_Pickup)
             {
                 Game.Player.Money += targetPed.Money;
                 targetPed.Money = 0;
@@ -105,7 +105,7 @@ namespace GTAVOverride.Functions
                             !Game.Player.Character.IsShooting &&
                             !Game.Player.Character.IsRagdoll &&
                             Function.Call<bool>(Hash.IS_PED_FACING_PED, Game.Player.Character, targetPed, maxAngle) &&
-                            Game.Player.Character.Position.DistanceTo(targetPed.Position) < 20f)
+                            Game.Player.Character.Position.DistanceTo(targetPed.Position) < Main.configRobPeople.Distance_Of_Reach)
                         {
                             Wait(1);
 
@@ -205,12 +205,12 @@ namespace GTAVOverride.Functions
                             if (targetPed.Gender == Gender.Male) targetPed.Task.FleeFrom(Game.Player.Character);
                             else targetPed.Task.ReactAndFlee(Game.Player.Character);
 
-                            while (Helpers.IsPedSpeaking(Game.Player.Character)) Wait(0);
-                            if (reward == 0)
+                            if (!Helpers.IsPedSpeaking(Game.Player.Character))
                             {
-                                if (PeopleManager.TotalPedsThreatened == 0) Helpers.PedSpeakThreathenFailed(Game.Player.Character);
+                                Wait(333);
+                                if (reward == 0) Helpers.PedSpeakThreathenFailed(Game.Player.Character);
+                                else Helpers.PedSpeakThreathenSuccess(Game.Player.Character);
                             }
-                            else if(PeopleManager.TotalPedsThreatened == 0) Helpers.PedSpeakThreathenSuccess(Game.Player.Character);
                         }
 
                         Abort();

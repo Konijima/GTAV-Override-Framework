@@ -77,11 +77,6 @@ namespace GTAVOverride.Data
             return JsonConvert.SerializeObject(this);
         }
 
-        public void Spawn()
-        {
-
-        }
-
         public static VehicleJson FromJson(string json)
         {
             Debug.Log("Loading vehicle from json...");

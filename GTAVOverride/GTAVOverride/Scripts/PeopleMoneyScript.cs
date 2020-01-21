@@ -22,7 +22,7 @@ namespace GTAVOverride.Scripts
 
             if (Game.GameTime > fetchSurroundingPedsTimer)
             {
-                surroundingPeds = World.GetNearbyPeds(Game.Player.Character, 20f);
+                surroundingPeds = World.GetNearbyPeds(Game.Player.Character, 30f);
 
                 // only if we allow randomization setting
                 if (Main.configSettings.Randomize_People_Money)
@@ -33,7 +33,7 @@ namespace GTAVOverride.Scripts
                     }
                 }
 
-                fetchSurroundingPedsTimer = Game.GameTime + 1000;
+                fetchSurroundingPedsTimer = Game.GameTime + 1500;
             }
 
             if (Main.configSettings.Debug_Mode)

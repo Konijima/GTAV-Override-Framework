@@ -130,7 +130,7 @@ namespace GTAVOverride.Scripts
                     threathen = true;
                     Function.Call(Hash.CLEAR_ALL_HELP_MESSAGES);
                 }
-                else Helpers.ShowHelpMessageThisFrame("Press ~INPUT_TALK~ to threathen.", false);
+                else Helpers.ShowHelpMessageThisFrame("Press ~INPUT_TALK~ to threathen.", Main.configRobPeople.Help_Message_Beep_Sound);
             }
             else threathen = true;
 

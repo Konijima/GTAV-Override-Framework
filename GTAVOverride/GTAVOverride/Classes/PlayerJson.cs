@@ -25,10 +25,12 @@ namespace GTAVOverride.Data
         public float MaxHealth { get; set; }
         public float Armor { get; set; }
         public WeaponHash Weapon { get; set; }
+        public LoadoutJson Weapons { get; set; }
         public VehicleJson CurrentVehicle { get; set; }
 
         public PlayerJson()
         {
+            Weapons = null;
             CurrentVehicle = null;
         }
 
@@ -54,7 +56,11 @@ namespace GTAVOverride.Data
             Health = ped.HealthFloat;
             MaxHealth = ped.MaxHealthFloat;
             Armor = ped.ArmorFloat;
+
+            // loadout
             Weapon = ped.Weapons.Current.Hash;
+            Weapons = new LoadoutJson();
+            Weapons.SetWeapons(ped);
 
             if (ped.CurrentVehicle != null) PlayerManager.CurrentPlayerVehicle = ped.CurrentVehicle;
             else if (ped.LastVehicle != null) PlayerManager.CurrentPlayerVehicle = ped.LastVehicle;

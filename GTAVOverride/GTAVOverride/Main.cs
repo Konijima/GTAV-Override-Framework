@@ -13,6 +13,7 @@ namespace GTAVOverride
     {
         public static ConfigData configData;
         public static ConfigSettings configSettings;
+        public static ConfigRobPeople configRobPeople;
         public static ConfigScripts configScripts;
         public static ConfigBlips configBlips;
         public static ConfigClock configClock;
@@ -24,6 +25,7 @@ namespace GTAVOverride
         {
             configData = new ConfigData(Settings);
             configSettings = new ConfigSettings(Settings);
+            configRobPeople = new ConfigRobPeople(Settings);
             configScripts = new ConfigScripts(Settings);
             configBlips = new ConfigBlips(Settings);
             configClock = new ConfigClock(Settings);

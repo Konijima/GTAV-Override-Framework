@@ -12,51 +12,52 @@ namespace GTAVOverride.Functions
     public class InitPlayer : Script
     {
         private PlayerJson playerJson;
+        private LoadoutJson loadoutJson;
         private VehicleJson vehicleJson;
         private Vehicle vehicle;
 
         public void SpawnVehicle()
         {
             Model model = new Model(vehicleJson.Hash);
-            while (!model.IsLoaded)
+            model.Request(500);
+            if (model.IsInCdImage && model.IsValid)
             {
-                model.Request();
-                Wait(1);
+                while (!model.IsLoaded) Wait(100);
+                Debug.Log("Vehicle model has loaded!");
+
+                vehicle = World.CreateVehicle(model, new Vector3(vehicleJson.X, vehicleJson.Y, vehicleJson.Z), vehicleJson.Heading);
+                vehicle.HealthFloat = vehicleJson.Health;
+                vehicle.BodyHealth = vehicleJson.BodyHealth;
+                vehicle.EngineHealth = vehicleJson.EngineHealth;
+                vehicle.PetrolTankHealth = vehicleJson.PetrolTankHealth;
+                vehicle.IsStolen = vehicleJson.IsStolen;
+                vehicle.IsSirenActive = vehicleJson.IsSirenActive;
+                vehicle.IsEngineRunning = true;
+                vehicle.IsInteriorLightOn = vehicleJson.IsInteriorLightOn;
+                vehicle.AreLightsOn = vehicleJson.AreLightsOn;
+                vehicle.LockStatus = vehicleJson.LockStatus;
+                vehicle.Mods.PrimaryColor = vehicleJson.PrimaryColor;
+                vehicle.Mods.SecondaryColor = vehicleJson.SecondaryColor;
+                vehicle.Mods.ColorCombination = vehicleJson.ColorCombination;
+                vehicle.Mods.Livery = vehicleJson.Livery;
+                vehicle.Mods.LicensePlate = vehicleJson.LicensePlate;
+                Function.Call(Hash.SET_VEH_RADIO_STATION, vehicle, vehicleJson.RadioStation);
+                Function.Call(Hash.SET_RADIO_TO_STATION_NAME, vehicleJson.RadioStation);
+                vehicle.Mods.RimColor = vehicleJson.RimColor;
+                vehicle.Mods.DashboardColor = vehicleJson.DashboardColor;
+                vehicle.Mods.TireSmokeColor = vehicleJson.TireSmokeColor;
+
+                Debug.Log("Vehicle spawned!");
+
+                model.RequestCollision(500);
+                while (!model.IsCollisionLoaded)
+                {
+                    Wait(100);
+                }
+                Debug.Log("Vehicle collision has loaded!");
+
+                model.MarkAsNoLongerNeeded();
             }
-            Debug.Log("Vehicle model has loaded!");
-
-            vehicle = World.CreateVehicle(model, new Vector3(vehicleJson.X, vehicleJson.Y, vehicleJson.Z), vehicleJson.Heading);
-            vehicle.HealthFloat = vehicleJson.Health;
-            vehicle.BodyHealth = vehicleJson.BodyHealth;
-            vehicle.EngineHealth = vehicleJson.EngineHealth;
-            vehicle.PetrolTankHealth = vehicleJson.PetrolTankHealth;
-            vehicle.IsStolen = vehicleJson.IsStolen;
-            vehicle.IsSirenActive = vehicleJson.IsSirenActive;
-            vehicle.IsEngineRunning = true;
-            vehicle.IsInteriorLightOn = vehicleJson.IsInteriorLightOn;
-            vehicle.AreLightsOn = vehicleJson.AreLightsOn;
-            vehicle.LockStatus = vehicleJson.LockStatus;
-            vehicle.Mods.PrimaryColor = vehicleJson.PrimaryColor;
-            vehicle.Mods.SecondaryColor = vehicleJson.SecondaryColor;
-            vehicle.Mods.ColorCombination = vehicleJson.ColorCombination;
-            vehicle.Mods.Livery = vehicleJson.Livery;
-            vehicle.Mods.LicensePlate = vehicleJson.LicensePlate;
-            Function.Call(Hash.SET_VEH_RADIO_STATION, vehicle, vehicleJson.RadioStation);
-            Function.Call(Hash.SET_RADIO_TO_STATION_NAME, vehicleJson.RadioStation);
-            vehicle.Mods.RimColor = vehicleJson.RimColor;
-            vehicle.Mods.DashboardColor = vehicleJson.DashboardColor;
-            vehicle.Mods.TireSmokeColor = vehicleJson.TireSmokeColor;
-
-            Debug.Log("Vehicle spawned!");
-
-            while (!model.IsCollisionLoaded)
-            {
-                model.RequestCollision();
-                Wait(1);
-            }
-            Debug.Log("Vehicle collision has loaded!");
-
-            model.MarkAsNoLongerNeeded();
         }
 
         public void SetPlayerOnFoot()
@@ -81,6 +82,7 @@ namespace GTAVOverride.Functions
         {
             this.playerJson = playerJson;
             this.vehicleJson = playerJson.CurrentVehicle;
+            this.loadoutJson = playerJson.Weapons;
 
             Tick += InitPlayer_Tick;
 
@@ -97,13 +99,21 @@ namespace GTAVOverride.Functions
                 Debug.Log("Player model need to be changed!");
 
                 Model model = new Model(playerJson.Hash);
-                if (test) model = new Model(PedHash.Michael);
-                model.Request();
-                while (!model.IsLoaded) Wait(1);
-                Debug.Log("Player model has loaded!");
+                model.Request(500);
+                if (model.IsInCdImage && model.IsValid)
+                {
+                    while (!model.IsLoaded) Wait(100);
+                    Debug.Log("Player model has loaded!");
 
-                Game.Player.ChangeModel(model);
-                Debug.Log("Player model has been changed!");
+                    Function.Call(Hash.SET_PLAYER_MODEL, Game.Player, model.Hash);
+                    Function.Call(Hash.SET_PED_DEFAULT_COMPONENT_VARIATION, Game.Player.Character);
+                    Debug.Log("Player model has been changed!");
+                }
+                else
+                {
+                    Debug.Log("Player model is invalid " + model.Hash + " !");
+                    Notification.Show("Invalid '" + model.Hash + "' model!");
+                }
 
                 if (test) Debug.SetPlayerDebugKit();
             }
@@ -149,6 +159,16 @@ namespace GTAVOverride.Functions
 
                 PlayerManager.ReplacePersonalVehicle(vehicle);
             }
+
+            // set player weapons
+            Debug.Log("Setting player loadout...");
+
+            foreach (WeaponJson weaponJson in loadoutJson.ownedWeapons)
+            {
+                Game.Player.Character.Weapons.Give(weaponJson.hash, weaponJson.ammo, false, true);
+            }
+            
+            Game.Player.Character.Weapons.Select(playerJson.Weapon);
 
             // end
             Debug.Log("Player init completed!");

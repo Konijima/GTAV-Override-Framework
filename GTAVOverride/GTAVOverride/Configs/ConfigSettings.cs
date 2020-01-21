@@ -7,7 +7,7 @@ namespace GTAVOverride.Configs
     public class ConfigSettings
     {
         private readonly string _section;
-        private ScriptSettings _settings;
+        private readonly ScriptSettings _settings;
 
         private bool _Debug_Mode = false;
         private bool _Dont_Generate_Log = false;
@@ -20,9 +20,8 @@ namespace GTAVOverride.Configs
         private bool _Hospital_Spawn_OnDeath = true;
         private int _Hospital_Fee = 500;
         private bool _PoliceStation_Spawn_OnArrest = true;
-        private int _PoliceStation_Fee = 500;
-        private bool _Show_Hud_OnKeyDown = true;
-        private bool _Quick_Rob_People_No_Pickup = false;
+        private int _PoliceStation_Fee = 200;
+        private bool _Show_Radar_OnKeyDown = true;
         private bool _Randomize_People_Money = true;
         private int _Randomize_Poor_People_MaxMoney = 30;
         private int _Randomize_Regular_People_MaxMoney = 100;
@@ -51,8 +50,7 @@ namespace GTAVOverride.Configs
             Hospital_Fee = _Hospital_Fee;
             PoliceStation_Spawn_OnArrest = _PoliceStation_Spawn_OnArrest;
             PoliceStation_Fee = _PoliceStation_Fee;
-            Show_Hud_OnKeyDown = _Show_Hud_OnKeyDown;
-            Quick_Rob_People_No_Pickup = _Quick_Rob_People_No_Pickup;
+            Show_Radar_OnKeyDown = _Show_Radar_OnKeyDown;
             Randomize_People_Money = _Randomize_People_Money;
             Randomize_Poor_People_MaxMoney = _Randomize_Poor_People_MaxMoney;
             Randomize_Regular_People_MaxMoney = _Randomize_Regular_People_MaxMoney;
@@ -75,8 +73,7 @@ namespace GTAVOverride.Configs
             _Hospital_Fee = _settings.GetValue(_section, "Hospital_Fee", _Hospital_Fee);
             _PoliceStation_Spawn_OnArrest = _settings.GetValue(_section, "PoliceStation_Spawn_OnArrest", _PoliceStation_Spawn_OnArrest);
             _PoliceStation_Fee = _settings.GetValue(_section, "PoliceStation_Fee", _PoliceStation_Fee);
-            _Show_Hud_OnKeyDown = _settings.GetValue(_section, "Show_Hud_OnKeyDown", _Show_Hud_OnKeyDown);
-            _Quick_Rob_People_No_Pickup = _settings.GetValue(_section, "Quick_Rob_People_No_Pickup", _Quick_Rob_People_No_Pickup);
+            _Show_Radar_OnKeyDown = _settings.GetValue(_section, "Show_Radar_OnKeyDown", _Show_Radar_OnKeyDown);
             _Randomize_People_Money = _settings.GetValue(_section, "Randomize_People_Money", _Randomize_People_Money);
             _Randomize_Poor_People_MaxMoney = _settings.GetValue(_section, "Randomize_Poor_People_MaxMoney", _Randomize_Poor_People_MaxMoney);
             _Randomize_Regular_People_MaxMoney = _settings.GetValue(_section, "Randomize_Regular_People_MaxMoney", _Randomize_Regular_People_MaxMoney);
@@ -240,29 +237,16 @@ namespace GTAVOverride.Configs
             }
         }
 
-        public bool Show_Hud_OnKeyDown
+        public bool Show_Radar_OnKeyDown
         {
             get
             {
-                return _Show_Hud_OnKeyDown;
+                return _Show_Radar_OnKeyDown;
             }
             set
             {
-                _Show_Hud_OnKeyDown = value;
-                _settings.SetValue(_section, "Show_Hud_OnKeyDown", _Show_Hud_OnKeyDown);
-            }
-        }
-
-        public bool Quick_Rob_People_No_Pickup
-        {
-            get
-            {
-                return _Quick_Rob_People_No_Pickup;
-            }
-            set
-            {
-                _Quick_Rob_People_No_Pickup = value;
-                _settings.SetValue<bool>(_section, "Quick_Rob_People_No_Pickup", _Quick_Rob_People_No_Pickup);
+                _Show_Radar_OnKeyDown = value;
+                _settings.SetValue(_section, "Show_Radar_OnKeyDown", _Show_Radar_OnKeyDown);
             }
         }
 

@@ -204,6 +204,10 @@ namespace GTAVOverride.Managers
 
         public static void Load()
         {
+            Game.Player.Money = 0;
+            Game.Player.WantedLevel = 0;
+            Game.Player.Character.Weapons.RemoveAll();
+
             if (HasSaveGame())
             {
                 string json = LoadPlayerData();
@@ -222,10 +226,6 @@ namespace GTAVOverride.Managers
                     IntroScreen intro = Script.InstantiateScript<IntroScreen>();
                     intro.Start();
                 }
-
-                Game.Player.Money = 0;
-                Game.Player.WantedLevel = 0;
-                Game.Player.Character.Weapons.RemoveAll();
 
                 Notification.Show(NotificationIcon.Multiplayer, "GTAVOverride", "Mod has initialized!", "Mod has initialized a new savegame file, your progress will be saved from now on.", true, true);
             }

@@ -62,6 +62,16 @@ namespace GTAVOverride
             else return "Los Santos";
         }
 
+        public static int GetPedAmmoByType(Ped ped, int ammoType)
+        {
+            return Function.Call<int>(Hash.GET_PED_AMMO_BY_TYPE, ped, ammoType);
+        }
+
+        public static int GetAmmoTypeFromPedWeapon(Ped ped, WeaponHash weaponHash)
+        {
+            return Function.Call<int>(Hash.GET_PED_AMMO_TYPE_FROM_WEAPON, ped, weaponHash);
+        }
+
         public static bool IsPedPolice(Ped ped)
         {
             if (ped == null || !ped.IsHuman) return false;
@@ -106,7 +116,7 @@ namespace GTAVOverride
             if (!playerPed.IsAlive ||
                 !playerPed.IsAiming ||
                 playerPed.IsRagdoll ||
-                Game.Player.WantedLevel > 1 ||
+                Game.Player.WantedLevel > Main.configRobPeople.Restrict_When_Stars_Bigger_Then ||
                 Game.Player.Character.IsInMeleeCombat ||
                 !CanRobPedWithThisWeapon(playerPed.Weapons.Current) ||
                 (!playerPed.IsOnFoot && !playerPed.IsOnBike))

@@ -65,7 +65,7 @@ namespace GTAVOverride.Managers
 
         public static void AddRobbedPed(Ped ped)
         {
-            if (RobbedPeds.Count > 20) RobbedPeds.RemoveAt(RobbedPeds.Count - 1);
+            if (RobbedPeds.Count > 20) RobbedPeds.RemoveAt(0);
             RobbedPeds.Add(ped);
             ThreatenedPeds.Remove(ped);
         }
