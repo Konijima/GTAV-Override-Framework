@@ -22,6 +22,9 @@ Drag and drop the content of the GTAVOverride into the scripts directory. If you
   
 ***
   
+**GTAVOverride WIKI:**  
+https://github.com/Konijima/GTAV-Override-Framework/wiki
+  
 **GTA 5 Mods Forum:**  
 https://forums.gta5-mods.com/topic/27076/wip-gtav-override
 
